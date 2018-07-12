@@ -1,0 +1,78 @@
+{
+  "textures": {
+    "particle": "animalcrops:blocks/crops_3",
+    "crops": "animalcrops:blocks/crops_3",
+    "egg": "animalcrops:blocks/egg",
+    "overlay": "animalcrops:blocks/egg_overlay"
+  },
+	"elements": [
+    {
+      "from": [ 0.8, 0, 8 ],
+      "to": [ 15.2, 16, 8 ],
+      "rotation": { "origin": [ 8, 8, 8 ], "axis": "y", "angle": 45, "rescale": true },
+      "shade": false,
+      "faces": {
+        "north": { "uv": [ 0, 0, 16, 16 ], "texture": "#crops" },
+        "south": { "uv": [ 0, 0, 16, 16 ], "texture": "#crops" }
+      }
+    },
+    {
+      "from": [ 8, 0, 0.8 ],
+      "to": [ 8, 16, 15.2 ],
+      "rotation": { "origin": [ 8, 8, 8 ], "axis": "y", "angle": 45, "rescale": true },
+      "shade": false,
+      "faces": {
+        "west": { "uv": [ 0, 0, 16, 16 ], "texture": "#crops" },
+        "east": { "uv": [ 0, 0, 16, 16 ], "texture": "#crops" }
+      }
+    },
+		{
+			"from": [6, 1, 6],
+			"to": [10, 4, 10],
+			"faces": {
+				"north": {"texture": "#egg", "tintindex": 0},
+				"east":  {"texture": "#egg", "tintindex": 0},
+				"south": {"texture": "#egg", "tintindex": 0},
+				"west":  {"texture": "#egg", "tintindex": 0},
+				"up":    {"texture": "#egg", "tintindex": 0},
+				"down":  {"texture": "#egg", "tintindex": 0}
+			}
+		},
+		{
+			"from": [7, 0, 7],
+			"to": [9, 6, 9],
+			"faces": {
+				"north": {"texture": "#egg", "tintindex": 0},
+				"east":  {"texture": "#egg", "tintindex": 0},
+				"south": {"texture": "#egg", "tintindex": 0},
+				"west":  {"texture": "#egg", "tintindex": 0},
+				"up":    {"texture": "#egg", "tintindex": 0},
+				"down":  {"texture": "#egg", "tintindex": 0, "cullface": "down"}
+			}
+		},
+		{
+			"from": [6, 1, 6],
+			"to": [10, 4, 10],
+			"faces": {
+				"north": {"texture": "#overlay", "tintindex": 1},
+				"east":  {"texture": "#overlay", "tintindex": 1},
+				"south": {"texture": "#overlay", "tintindex": 1},
+				"west":  {"texture": "#overlay", "tintindex": 1},
+				"up":    {"texture": "#overlay", "tintindex": 1},
+				"down":  {"texture": "#overlay", "tintindex": 1}
+			}
+		},
+		{
+			"from": [7, 0, 7],
+			"to": [9, 6, 9],
+			"faces": {
+				"north": {"texture": "#overlay", "tintindex": 1},
+				"east":  {"texture": "#overlay", "tintindex": 1},
+				"south": {"texture": "#overlay", "tintindex": 1},
+				"west":  {"texture": "#overlay", "tintindex": 1},
+				"up":    {"texture": "#overlay", "tintindex": 1},
+				"down":  {"texture": "#overlay", "tintindex": 1, "cullface": "down"}
+			}
+		}
+	]
+}
