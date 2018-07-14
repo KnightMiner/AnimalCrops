@@ -33,6 +33,7 @@ public class Config {
 	};
 	public static boolean canBonemeal = true;
 	public static boolean fancyCropRendering = true;
+	public static boolean rightClickHarvest = true;
 
 	static Configuration configFile;
 	public static void preInit(FMLPreInitializationEvent event) {
@@ -40,6 +41,9 @@ public class Config {
 
 		canBonemeal = configFile.getBoolean("canBonemeal", "general", canBonemeal,
 				"Determines if bonemeal can be applied to the animal crop");
+		rightClickHarvest = configFile.getBoolean("rightClickHarvest", "general", rightClickHarvest,
+				"Harvests the crop on right click (which is really the same as just breaking it). Added because people cannot write their right click harvest mods right.");
+
 		fancyCropRendering = configFile.getBoolean("fancyCropRendering", "client", fancyCropRendering,
 				"Makes the animal crop render the entity model. If false will just render a tinted texture based on the spawn egg colors");
 

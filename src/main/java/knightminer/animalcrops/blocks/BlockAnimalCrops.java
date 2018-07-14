@@ -19,6 +19,8 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
@@ -68,7 +70,7 @@ public class BlockAnimalCrops extends BlockCrops implements ITileEntityProvider 
     // do not drop anything if max age, no seed drops basically
     @Override
     public void getDrops(net.minecraft.util.NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
-        if(state.getValue(getAgeProperty()) < getMaxAge()) {
+        if(getAge(state) < getMaxAge()) {
     		drops.add(getSeedItem(world, pos));
         }
     }
@@ -95,6 +97,15 @@ public class BlockAnimalCrops extends BlockCrops implements ITileEntityProvider 
 		// side effect of this is that no xp will be dropped. but it shoudln't anyway from a bookshelf :P
 		return false;
 	}
+
+    @Override
+	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+        if(Config.rightClickHarvest && getAge(state) >= this.getMaxAge()) {
+        	world.destroyBlock(pos, true);
+        	return true;
+        }
+    	return false;
+    }
 
 
     /* Crop properties */
