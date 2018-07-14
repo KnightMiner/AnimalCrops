@@ -11,6 +11,7 @@ import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.block.statemap.StateMapperBase;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityList.EntityEggInfo;
+import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.ColorHandlerEvent;
@@ -30,13 +31,20 @@ public class ClientProxy extends CommonProxy {
 
 	@SubscribeEvent
 	public void registerModels(ModelRegistryEvent event) {
-		ModelLoader.setCustomModelResourceLocation(AnimalCrops.seeds, 0, new ModelResourceLocation(AnimalCrops.seeds.getRegistryName(), "inventory"));
+		registerItemModel(AnimalCrops.seeds);
+		registerItemModel(AnimalCrops.itemBush);
 
 		// fancy means we show the entity model, regular we show an egg
 		if(Config.fancyCropRendering) {
 			ClientRegistry.bindTileEntitySpecialRenderer(TileAnimalCrops.class, new RenderAnimalCrops());
 		} else {
 			ModelLoader.setCustomStateMapper(AnimalCrops.crops, new NameStateMapper(CROPS_EGG));
+		}
+	}
+
+	private static void registerItemModel(Item item) {
+		if(item != null) {
+			ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(item.getRegistryName(), "inventory"));
 		}
 	}
 

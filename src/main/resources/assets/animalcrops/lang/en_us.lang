@@ -1,3 +1,5 @@
 tile.animalcrops.crops.name=Animal Crop
+tile.animalcrops.bush.name=Animal Bush
+
 item.animalcrops.seeds.name=%s Seeds
 item.animalcrops.seeds.default.name=Animal Seeds

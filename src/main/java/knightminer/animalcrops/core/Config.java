@@ -34,6 +34,8 @@ public class Config {
 	public static boolean canBonemeal = true;
 	public static boolean fancyCropRendering = true;
 	public static boolean rightClickHarvest = true;
+	public static boolean animalBush = true;
+	public static int animalBushChance = 20;
 
 	static Configuration configFile;
 	public static void preInit(FMLPreInitializationEvent event) {
@@ -43,6 +45,10 @@ public class Config {
 				"Determines if bonemeal can be applied to the animal crop");
 		rightClickHarvest = configFile.getBoolean("rightClickHarvest", "general", rightClickHarvest,
 				"Harvests the crop on right click (which is really the same as just breaking it). Added because people cannot write their right click harvest mods right.");
+		animalBush = configFile.getBoolean("animalBush", "general", animalBush,
+				"Adds the animal bush: a block that when broken drops a random animal seed.");
+		animalBushChance = configFile.getInt("animalBushChance", "general", animalBushChance, 0, 500,
+				"Chance for an animal bush to generate per chunk. Formula is a 1 in <chance> chance of generating. Set to 0 to disable generation.");
 
 		fancyCropRendering = configFile.getBoolean("fancyCropRendering", "client", fancyCropRendering,
 				"Makes the animal crop render the entity model. If false will just render a tinted texture based on the spawn egg colors");
