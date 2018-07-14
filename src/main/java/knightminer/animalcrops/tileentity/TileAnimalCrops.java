@@ -8,6 +8,7 @@ import knightminer.animalcrops.core.Utils;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAgeable;
+import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityList;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
@@ -21,7 +22,7 @@ import net.minecraft.world.World;
 public class TileAnimalCrops extends TileEntity {
 	public static final String ENTITY_DATA_TAG = "entity_data";
 
-	private EntityAgeable entity;
+	private EntityCreature entity;
 	@Override
 	public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newSate) {
 		return oldState.getBlock() != newSate.getBlock();
@@ -31,7 +32,7 @@ public class TileAnimalCrops extends TileEntity {
 	 * Gets the entity stored in this crop, reading from NBT if needed
 	 * @return  The stored entity
 	 */
-	public EntityAgeable getEntity() {
+	public EntityCreature getEntity() {
 		// if we have an entity, return that
 		if(entity != null) {
 			return entity;
@@ -50,7 +51,7 @@ public class TileAnimalCrops extends TileEntity {
 
 			// entity must be entity ageable
 			Entity entityFromName = EntityList.createEntityByIDFromName(entityID, world);
-			if(!(entityFromName instanceof EntityAgeable)) {
+			if(!(entityFromName instanceof EntityCreature)) {
 				entityFromName.setDead();
 				this.getTileData().removeTag(Utils.ENTITY_TAG);
 				this.getTileData().removeTag(ENTITY_DATA_TAG);
@@ -59,7 +60,7 @@ public class TileAnimalCrops extends TileEntity {
 			}
 
 			// we have the proper type
-	    	entity = (EntityAgeable)entityFromName;
+	    	entity = (EntityCreature)entityFromName;
 
 			// if we have NBT already, use that
 			if(this.getTileData().hasKey(ENTITY_DATA_TAG, 10)) {
@@ -76,7 +77,9 @@ public class TileAnimalCrops extends TileEntity {
 			}
 
 			// if we do not have NBT or it was bad, set entity data
-			entity.setGrowingAge(-24000);
+			if(entity instanceof EntityAgeable) {
+				((EntityAgeable)entity).setGrowingAge(-24000);
+			}
 	        entity.onInitialSpawn(world.getDifficultyForLocation(new BlockPos(entity)), null);
 	        entity.rotationYaw = MathHelper.wrapDegrees(world.rand.nextInt(4) * 90.0F); // face randomly in one of 4 directions
 	        entity.rotationYawHead = entity.rotationYaw;

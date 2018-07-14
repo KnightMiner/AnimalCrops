@@ -5,7 +5,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
-import net.minecraft.entity.EntityAgeable;
+import net.minecraft.entity.EntityCreature;
 
 public class RenderAnimalCrops extends TileEntitySpecialRenderer<TileAnimalCrops> {
 	private static final Minecraft mc = Minecraft.getMinecraft();
@@ -15,7 +15,7 @@ public class RenderAnimalCrops extends TileEntitySpecialRenderer<TileAnimalCrops
     	if(meta == 0) {
     		return;
     	}
-    	EntityAgeable entity = te.getEntity();
+    	EntityCreature entity = te.getEntity();
     	if(entity == null) {
     		return;
     	}
