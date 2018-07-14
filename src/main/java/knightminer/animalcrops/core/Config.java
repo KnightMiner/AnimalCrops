@@ -25,6 +25,7 @@ public class Config {
 			"minecraft:pig",
 			"minecraft:polar_bear",
 			"minecraft:rabbit",
+			"minecraft:sheep",
 			"minecraft:villager",
 			"minecraft:wolf",
 	};
