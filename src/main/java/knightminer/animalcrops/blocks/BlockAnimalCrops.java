@@ -20,6 +20,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -104,6 +105,11 @@ public class BlockAnimalCrops extends BlockCrops implements ITileEntityProvider 
     }
 
     @Override
+	public boolean canBlockStay(World world, BlockPos pos, IBlockState state) {
+        return (world.getLight(pos) >= 8 || world.canSeeSky(pos)) && canSustainBush(world.getBlockState(pos.down()));
+    }
+
+    @Override
 	protected Item getCrop() {
         return Items.AIR;
     }
@@ -117,4 +123,10 @@ public class BlockAnimalCrops extends BlockCrops implements ITileEntityProvider 
 	protected ItemAnimalSeeds getSeed() {
         return AnimalCrops.seeds;
     }
+
+    @Override
+	protected int getBonemealAgeIncrease(World worldIn) {
+        return MathHelper.getInt(worldIn.rand, 1, 3);
+    }
+
 }
