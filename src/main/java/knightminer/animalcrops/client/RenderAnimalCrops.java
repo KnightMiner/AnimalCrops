@@ -26,7 +26,7 @@ public class RenderAnimalCrops extends TileEntitySpecialRenderer<TileAnimalCrops
         int j = brightness & 0xFFFF;
         int k = brightness >> 0x10 & 0xFFFF;
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, j, k);
-        GlStateManager.color(0.75F, 1.0F, 0.75F, 1.0F);
+        GlStateManager.color(0.65F, 1.0F, 0.65F, 1.0F);
         GlStateManager.translate(x + 0.5, y, z + 0.5);
         if(meta < 7) {
             float scale = meta / 7f;
