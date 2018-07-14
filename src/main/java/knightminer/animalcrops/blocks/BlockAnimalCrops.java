@@ -51,11 +51,13 @@ public class BlockAnimalCrops extends BlockCrops implements ITileEntityProvider 
     }
     @Override
 	public void breakBlock(World world, BlockPos pos, IBlockState state) {
-    	if(state.getValue(getAgeProperty()) >= getMaxAge()) {
-	    	TileEntity te = world.getTileEntity(pos);
-	    	if(te instanceof TileAnimalCrops) {
-	    		((TileAnimalCrops)te).spawnAnimal();
-	    	}
+    	TileEntity te = world.getTileEntity(pos);
+    	if(te instanceof TileAnimalCrops) {
+        	if(getAge(state) >= getMaxAge()) {
+        		((TileAnimalCrops)te).spawnAnimal();
+        	} else {
+        		((TileAnimalCrops)te).setDead();
+        	}
     	}
 
     	super.breakBlock(world, pos, state);

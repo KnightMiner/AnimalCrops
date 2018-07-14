@@ -91,7 +91,7 @@ public class TileAnimalCrops extends TileEntity {
 	}
 
 	public void setAnimal(ResourceLocation entityID) {
-		if(world.isRemote) {
+		if(world.isRemote || entityID == null) {
 			return;
 		}
 		this.getTileData().setString(Utils.ENTITY_TAG, entityID.toString());
@@ -103,6 +103,7 @@ public class TileAnimalCrops extends TileEntity {
 	}
 
 	public void spawnAnimal() {
+		// if we have no entity, give up
 		if(getEntity() == null) {
 			return;
 		}
@@ -115,6 +116,12 @@ public class TileAnimalCrops extends TileEntity {
         world.spawnEntity(entity);
         entity.playLivingSound();
     }
+
+	public void setDead() {
+		if(entity != null) {
+			entity.setDead();
+		}
+	}
 
 	/* NBT */
 
