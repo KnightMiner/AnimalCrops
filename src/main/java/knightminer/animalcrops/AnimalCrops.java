@@ -7,6 +7,7 @@ import knightminer.animalcrops.blocks.BlockAnimalBush;
 import knightminer.animalcrops.blocks.BlockAnimalCrops;
 import knightminer.animalcrops.core.CommonProxy;
 import knightminer.animalcrops.core.Config;
+import knightminer.animalcrops.core.Utils;
 import knightminer.animalcrops.items.ItemAnimalSeeds;
 import knightminer.animalcrops.tileentity.TileAnimalCrops;
 import knightminer.animalcrops.world.WorldGenAnimalCrops;
@@ -86,6 +87,7 @@ public class AnimalCrops {
 	@EventHandler
 	public void init(FMLInitializationEvent event) {
 		Config.init(event);
+		Utils.initReflection();
 
 		if(Config.animalBush && Config.animalBushChance > 0) {
 			GameRegistry.registerWorldGenerator(new WorldGenAnimalCrops(), 25);

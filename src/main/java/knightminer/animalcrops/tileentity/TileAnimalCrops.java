@@ -1,7 +1,5 @@
 package knightminer.animalcrops.tileentity;
 
-import java.lang.reflect.InvocationTargetException;
-
 import javax.annotation.Nonnull;
 
 import knightminer.animalcrops.AnimalCrops;
@@ -21,7 +19,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
 public class TileAnimalCrops extends TileEntity {
 	public static final String ENTITY_DATA_TAG = "entity_data";
@@ -90,11 +87,7 @@ public class TileAnimalCrops extends TileEntity {
 	        if(entity instanceof EntitySlime) {
 	        	EntitySlime slime = (EntitySlime)entity;
 	        	if(slime.getSlimeSize() > 2) {
-	        		try {
-						ReflectionHelper.findMethod(EntitySlime.class, "setSlimeSize", "func_70799_a", int.class, boolean.class).invoke(slime, 2, true);
-					} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-						AnimalCrops.log.error("Caught exception trying to set slime size", ex);
-					}
+	        		Utils.setSlimeSize(slime, 2);
 	        	}
 	        }
 
