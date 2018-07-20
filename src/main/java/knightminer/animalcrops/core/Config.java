@@ -5,8 +5,8 @@ import java.util.Collections;
 import java.util.List;
 
 import knightminer.animalcrops.AnimalCrops;
-import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityList;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -60,19 +60,23 @@ public class Config {
 
 	public static void init(FMLInitializationEvent event) {
 		animalDefaults = configFile.get("general", "animals", animalDefaults,
-				"List of animals to add as animal seeds. Must extend EntityCreature (basically land creatures)").getStringList();
+				"List of animals to add as animal seeds. Must extend EntityLiving").getStringList();
 
 		// ensure all the animals are valid
 		animals = new ArrayList<>();
 		for(String animal : animalDefaults) {
 			// ensure the entity is registered
 			ResourceLocation location = new ResourceLocation(animal);
+			if(!EntityList.ENTITY_EGGS.containsKey(location)) {
+				AnimalCrops.log.error("Invalid entity {}, must have a spawn egg", animal);
+				continue;
+			}
 			if(EntityList.isRegistered(location)) {
 				// insure the entity type is valid, we only allow entity creature
-				if(EntityCreature.class.isAssignableFrom(EntityList.getClass(location))) {
+				if(EntityLiving.class.isAssignableFrom(EntityList.getClass(location))) {
 					animals.add(location);
 				} else {
-					AnimalCrops.log.error("Invalid entity type for {}, must extend EntityCreature", animal);
+					AnimalCrops.log.error("Invalid entity type for {}, must extend EntityLiving", animal);
 				}
 			} else {
 				AnimalCrops.log.debug("Could not find entity {}, either entity is missing or the ID is incorrect", animal);

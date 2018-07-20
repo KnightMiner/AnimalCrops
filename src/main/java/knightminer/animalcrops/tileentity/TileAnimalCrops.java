@@ -1,5 +1,7 @@
 package knightminer.animalcrops.tileentity;
 
+import java.lang.reflect.InvocationTargetException;
+
 import javax.annotation.Nonnull;
 
 import knightminer.animalcrops.AnimalCrops;
@@ -8,8 +10,9 @@ import knightminer.animalcrops.core.Utils;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAgeable;
-import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityList;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.monster.EntitySlime;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
@@ -18,11 +21,12 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
 public class TileAnimalCrops extends TileEntity {
 	public static final String ENTITY_DATA_TAG = "entity_data";
 
-	private EntityCreature entity;
+	private EntityLiving entity;
 	@Override
 	public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newSate) {
 		return oldState.getBlock() != newSate.getBlock();
@@ -32,7 +36,7 @@ public class TileAnimalCrops extends TileEntity {
 	 * Gets the entity stored in this crop, reading from NBT if needed
 	 * @return  The stored entity
 	 */
-	public EntityCreature getEntity() {
+	public EntityLiving getEntity() {
 		// if we have an entity, return that
 		if(entity != null) {
 			return entity;
@@ -51,7 +55,7 @@ public class TileAnimalCrops extends TileEntity {
 
 			// entity must be entity ageable
 			Entity entityFromName = EntityList.createEntityByIDFromName(entityID, world);
-			if(!(entityFromName instanceof EntityCreature)) {
+			if(!(entityFromName instanceof EntityLiving)) {
 				entityFromName.setDead();
 				this.getTileData().removeTag(Utils.ENTITY_TAG);
 				this.getTileData().removeTag(ENTITY_DATA_TAG);
@@ -60,7 +64,7 @@ public class TileAnimalCrops extends TileEntity {
 			}
 
 			// we have the proper type
-	    	entity = (EntityCreature)entityFromName;
+	    	entity = (EntityLiving)entityFromName;
 
 			// if we have NBT already, use that
 			if(this.getTileData().hasKey(ENTITY_DATA_TAG, 10)) {
@@ -81,6 +85,19 @@ public class TileAnimalCrops extends TileEntity {
 				((EntityAgeable)entity).setGrowingAge(-24000);
 			}
 	        entity.onInitialSpawn(world.getDifficultyForLocation(new BlockPos(entity)), null);
+
+	        // slime sizes should not be bigger than 2
+	        if(entity instanceof EntitySlime) {
+	        	EntitySlime slime = (EntitySlime)entity;
+	        	if(slime.getSlimeSize() > 2) {
+	        		try {
+						ReflectionHelper.findMethod(EntitySlime.class, "setSlimeSize", "func_70799_a", int.class, boolean.class).invoke(slime, 2, true);
+					} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+						AnimalCrops.log.error("Caught exception trying to set slime size", ex);
+					}
+	        	}
+	        }
+
 	        entity.rotationYaw = MathHelper.wrapDegrees(world.rand.nextInt(4) * 90.0F); // face randomly in one of 4 directions
 	        entity.rotationYawHead = entity.rotationYaw;
 	        entity.renderYawOffset = entity.rotationYaw;
