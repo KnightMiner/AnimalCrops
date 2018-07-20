@@ -143,8 +143,7 @@ public class TileAnimalCrops extends TileEntity {
 	@Override
 	public SPacketUpdateTileEntity getUpdatePacket() {
 		// note that this sends all of the tile data. you should change this if you use additional tile data
-		NBTTagCompound tag = getTileData().copy();
-		writeToNBT(tag);
+		NBTTagCompound tag = writeToNBT(new NBTTagCompound());
 		return new SPacketUpdateTileEntity(this.getPos(), this.getBlockMetadata(), tag);
 	}
 
