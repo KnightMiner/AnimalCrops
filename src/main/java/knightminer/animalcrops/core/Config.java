@@ -31,8 +31,12 @@ public class Config {
 			"minecraft:villager",
 			"minecraft:wolf",
 	};
+
+	// crop
 	public static boolean canBonemeal = true;
 	public static boolean fancyCropRendering = true;
+	public static int seedDropChance = 0;
+	// bush
 	public static boolean rightClickHarvest = true;
 	public static boolean animalBush = true;
 	public static int animalBushChance = 20;
@@ -41,15 +45,27 @@ public class Config {
 	public static void preInit(FMLPreInitializationEvent event) {
 		configFile = new Configuration(event.getSuggestedConfigurationFile(), "0.1", false);
 
-		canBonemeal = configFile.getBoolean("canBonemeal", "general", canBonemeal,
+		// crop
+		configFile.moveProperty("general", "canBonemeal", "crop");
+		configFile.moveProperty("general", "rightClickHarvest", "crop");
+		canBonemeal = configFile.getBoolean("canBonemeal", "crop", canBonemeal,
 				"Determines if bonemeal can be applied to the animal crop");
-		rightClickHarvest = configFile.getBoolean("rightClickHarvest", "general", rightClickHarvest,
+		rightClickHarvest = configFile.getBoolean("rightClickHarvest", "crop", rightClickHarvest,
 				"Harvests the crop on right click (which is really the same as just breaking it). Added because people cannot write their right click harvest mods right.");
-		animalBush = configFile.getBoolean("animalBush", "general", animalBush,
+		seedDropChance = configFile.getInt("seedDropChance", "crop", seedDropChance, 0, 100,
+				"Chance for an animal crop to drop a seed if fully grown in addition to the animal. Formula is a 1 in <chance> chance of dropping. Set to 0 to never drop seeds, and 1 to always drop");
+
+		// bush
+		configFile.moveProperty("general", "animalBush", "bush");
+		configFile.renameProperty("bush", "animalBush", "enable");
+		configFile.moveProperty("general", "animalBushChance", "bush");
+		configFile.renameProperty("bush", "animalBushChance", "chance");
+		animalBush = configFile.getBoolean("enable", "bush", animalBush,
 				"Adds the animal bush: a block that when broken drops a random animal seed.");
-		animalBushChance = configFile.getInt("animalBushChance", "general", animalBushChance, 0, 500,
+		animalBushChance = configFile.getInt("chance", "bush", animalBushChance, 0, 500,
 				"Chance for an animal bush to generate per chunk. Formula is a 1 in <chance> chance of generating. Set to 0 to disable generation.");
 
+		// client
 		fancyCropRendering = configFile.getBoolean("fancyCropRendering", "client", fancyCropRendering,
 				"Makes the animal crop render the entity model. If false will just render a tinted texture based on the spawn egg colors");
 
