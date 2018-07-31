@@ -33,20 +33,21 @@ public class TileAnimalCrops extends TileEntity {
 	 * Gets the entity stored in this crop, reading from NBT if needed
 	 * @return  The stored entity
 	 */
-	public EntityLiving getEntity() {
+	public EntityLiving getEntity(boolean updateNBT) {
 		// if we have an entity, return that
 		if(entity != null) {
 			return entity;
 		}
 
 		// if an entity is set, we can create an entity
-		if(this.getTileData().hasKey(Utils.ENTITY_TAG, 8)) {
+		NBTTagCompound data = this.getTileData();
+		if(data.hasKey(Utils.ENTITY_TAG, 8)) {
 			// entity must be whitelisted
-			ResourceLocation entityID = new ResourceLocation(this.getTileData().getString(Utils.ENTITY_TAG));
+			ResourceLocation entityID = new ResourceLocation(data.getString(Utils.ENTITY_TAG));
 			if(!Config.animals.contains(entityID)) {
-				this.getTileData().removeTag(Utils.ENTITY_TAG);
-				this.getTileData().removeTag(ENTITY_DATA_TAG);
-				this.markDirty();
+				if(updateNBT) {
+					clearEntity(true);
+				}
 				return null;
 			}
 
@@ -54,9 +55,7 @@ public class TileAnimalCrops extends TileEntity {
 			Entity entityFromName = EntityList.createEntityByIDFromName(entityID, world);
 			if(!(entityFromName instanceof EntityLiving)) {
 				entityFromName.setDead();
-				this.getTileData().removeTag(Utils.ENTITY_TAG);
-				this.getTileData().removeTag(ENTITY_DATA_TAG);
-				this.markDirty();
+				clearEntity(true);
 				return null;
 			}
 
@@ -64,8 +63,8 @@ public class TileAnimalCrops extends TileEntity {
 	    	entity = (EntityLiving)entityFromName;
 
 			// if we have NBT already, use that
-			if(this.getTileData().hasKey(ENTITY_DATA_TAG, 10)) {
-				NBTTagCompound entityData = this.getTileData().getCompoundTag(ENTITY_DATA_TAG);
+			if(data.hasKey(ENTITY_DATA_TAG, 10)) {
+				NBTTagCompound entityData = data.getCompoundTag(ENTITY_DATA_TAG);
 				try {
 					entity.readFromNBT(entityData);
 					// set for the client, since prev is needed for rotation but not stored to NBT
@@ -73,7 +72,9 @@ public class TileAnimalCrops extends TileEntity {
 					return entity;
 				} catch(Exception ex) {
 					AnimalCrops.log.error("Exception caught loading entity from NBT", ex);
-					this.getTileData().removeTag(ENTITY_DATA_TAG);
+					if(updateNBT) {
+						data.removeTag(ENTITY_DATA_TAG);
+					}
 				}
 			}
 
@@ -94,12 +95,32 @@ public class TileAnimalCrops extends TileEntity {
 	        entity.rotationYaw = MathHelper.wrapDegrees(world.rand.nextInt(4) * 90.0F); // face randomly in one of 4 directions
 	        entity.rotationYawHead = entity.rotationYaw;
 	        entity.renderYawOffset = entity.rotationYaw;
-			this.getTileData().setTag(ENTITY_DATA_TAG, entity.writeToNBT(new NBTTagCompound()));
+	        if(updateNBT) {
+	        	data.setTag(ENTITY_DATA_TAG, entity.writeToNBT(new NBTTagCompound()));
+	        }
 			this.markDirty();
 		}
 	    return entity;
 	}
 
+	/**
+	 * Removes the current entity from the TE and its NBT
+	 * @param clearType  if true, removes the entity type
+	 */
+	private void clearEntity(boolean clearType) {
+		entity = null;
+		NBTTagCompound data = this.getTileData();
+		if(clearType) {
+			data.removeTag(Utils.ENTITY_TAG);
+		}
+		data.removeTag(ENTITY_DATA_TAG);
+		this.markDirty();
+	}
+
+	/**
+	 * Sets the entity into the TE
+	 * @param entityID  Entity ID to set
+	 */
 	public void setAnimal(ResourceLocation entityID) {
 		if(world.isRemote || entityID == null) {
 			return;
@@ -107,14 +128,17 @@ public class TileAnimalCrops extends TileEntity {
 		this.getTileData().setString(Utils.ENTITY_TAG, entityID.toString());
 		// if we have fancy rendering, create the entity now so the client can grab it
 		if(Config.fancyCropRendering) {
-			getEntity();
+			getEntity(true);
 		}
 		this.markDirty();
 	}
 
+	/**
+	 * Spawns the current entity into the world then clears it
+	 */
 	public void spawnAnimal() {
 		// if we have no entity, give up
-		if(getEntity() == null) {
+		if(getEntity(false) == null) {
 			return;
 		}
 
