@@ -9,6 +9,7 @@ import knightminer.animalcrops.core.Config;
 import knightminer.animalcrops.core.Utils;
 import knightminer.animalcrops.items.ItemAnimalSeeds;
 import knightminer.animalcrops.tileentity.TileAnimalCrops;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockCrops;
 import net.minecraft.block.BlockGrass;
 import net.minecraft.block.ITileEntityProvider;
@@ -49,6 +50,7 @@ public class BlockAnimalCrops extends BlockCrops implements ITileEntityProvider 
         	((TileAnimalCrops)te).setAnimal(Utils.getEntityID(stack.getTagCompound()));
         }
     }
+
     @Override
 	public void breakBlock(World world, BlockPos pos, IBlockState state) {
     	TileEntity te = world.getTileEntity(pos);
@@ -96,14 +98,27 @@ public class BlockAnimalCrops extends BlockCrops implements ITileEntityProvider 
 
 		world.setBlockToAir(pos);
 		// return false to prevent the above called functions to be called again
-		// side effect of this is that no xp will be dropped. but it shoudln't anyway from a bookshelf :P
+		// side effect of this is that no xp will be dropped
 		return false;
 	}
 
     @Override
-	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         if(Config.rightClickHarvest && getAge(state) >= this.getMaxAge()) {
-        	world.destroyBlock(pos, true);
+        	// if a drop chance exists, try to drop it
+        	// skip on the client side though, so our randoms don't disagree.
+        	// If the server replaces it the client will get the update as long as the client removes the old block
+        	if(!world.isRemote && Config.seedDropChance > 0 && RANDOM.nextInt(Config.seedDropChance) == 0) {
+        		// if successful, we need to spawn and reset the entity then the state
+        		TileEntity te = world.getTileEntity(pos);
+            	if(te instanceof TileAnimalCrops) {
+            		((TileAnimalCrops)te).spawnAndReset();
+            	}
+                world.playEvent(2001, pos, Block.getStateId(state));
+        		world.setBlockState(pos, state.withProperty(AGE, 0));
+        	} else {
+            	world.destroyBlock(pos, false);
+        	}
         	return true;
         }
     	return false;

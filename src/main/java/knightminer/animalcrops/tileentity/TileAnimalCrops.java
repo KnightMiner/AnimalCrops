@@ -151,6 +151,18 @@ public class TileAnimalCrops extends TileEntity {
         entity.playLivingSound();
     }
 
+	/**
+	 * Spawns the entity then resets the crop's NBT
+	 */
+	public void spawnAndReset() {
+		spawnAnimal();
+		clearEntity(false);
+		if(Config.fancyCropRendering) {
+			getEntity(true);
+			markDirty();
+		}
+	}
+
 	public void setDead() {
 		if(entity != null) {
 			entity.setDead();
