@@ -30,6 +30,7 @@ public class Config {
 			"minecraft:sheep",
 			"minecraft:villager",
 			"minecraft:wolf",
+			"waddles:adelie_penguin",
 	};
 
 	// crop
