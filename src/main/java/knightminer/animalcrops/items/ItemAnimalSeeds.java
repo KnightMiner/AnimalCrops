@@ -27,7 +27,7 @@ import net.minecraftforge.common.EnumPlantType;
 @SuppressWarnings("deprecation")
 public class ItemAnimalSeeds extends ItemSeeds {
 
-	private Block crops;
+	protected Block crops;
 	public ItemAnimalSeeds(Block crops) {
 		super(crops, Blocks.GRASS);
 		this.crops = crops;
@@ -86,11 +86,12 @@ public class ItemAnimalSeeds extends ItemSeeds {
         IBlockState state = world.getBlockState(pos);
         BlockPos up = pos.up();
         if (side == EnumFacing.UP && player.canPlayerEdit(pos.offset(side), side, stack) && state.getBlock() instanceof BlockGrass && world.isAirBlock(up)) {
-            if(!world.setBlockState(up, this.getPlant(world, pos)) || world.getBlockState(up).getBlock() != this.crops) {
+        	IBlockState plant = this.getPlant(world, pos);
+            if(!world.setBlockState(up, plant) || world.getBlockState(up).getBlock() != this.crops) {
             	return EnumActionResult.FAIL;
             }
 
-            this.crops.onBlockPlacedBy(world, up, state, player, stack);
+            this.crops.onBlockPlacedBy(world, up, plant, player, stack);
 
             if (player instanceof EntityPlayerMP) {
                 CriteriaTriggers.PLACED_BLOCK.trigger((EntityPlayerMP)player, pos.up(), stack);

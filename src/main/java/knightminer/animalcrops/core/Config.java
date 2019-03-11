@@ -15,6 +15,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 public class Config {
 
 	public static List<ResourceLocation> animals = Collections.emptyList();
+	public static List<ResourceLocation> seaAnimals = Collections.emptyList();
 	private static String[] animalDefaults = {
 			"minecraft:chicken",
 			"minecraft:cow",
@@ -31,6 +32,9 @@ public class Config {
 			"minecraft:villager",
 			"minecraft:wolf",
 			"waddles:adelie_penguin",
+	};
+	private static String[] seaAnimalDefaults = {
+			"minecraft:squid",
 	};
 
 	// crop
@@ -75,13 +79,9 @@ public class Config {
 		}
 	}
 
-	public static void init(FMLInitializationEvent event) {
-		animalDefaults = configFile.get("general", "animals", animalDefaults,
-				"List of animals to add as animal seeds. Must extend EntityLiving").getStringList();
-
-		// ensure all the animals are valid
-		animals = new ArrayList<>();
-		for(String animal : animalDefaults) {
+	private static List<ResourceLocation> processAnimals(String[] animals) {
+		List<ResourceLocation> result = new ArrayList<>();
+		for(String animal : animals) {
 			// ensure the entity is registered
 			ResourceLocation location = new ResourceLocation(animal);
 			if(!EntityList.ENTITY_EGGS.containsKey(location)) {
@@ -89,9 +89,9 @@ public class Config {
 				continue;
 			}
 			if(EntityList.isRegistered(location)) {
-				// insure the entity type is valid, we only allow entity creature
+				// insure the entity type is valid, we only allow entity living
 				if(EntityLiving.class.isAssignableFrom(EntityList.getClass(location))) {
-					animals.add(location);
+					result.add(location);
 				} else {
 					AnimalCrops.log.error("Invalid entity type for {}, must extend EntityLiving", animal);
 				}
@@ -99,6 +99,18 @@ public class Config {
 				AnimalCrops.log.debug("Could not find entity {}, either entity is missing or the ID is incorrect", animal);
 			}
 		}
+		return result;
+	}
+
+	public static void init(FMLInitializationEvent event) {
+		animalDefaults = configFile.get("general", "animals", animalDefaults,
+				"List of animals to add as animal seeds. Must extend EntityLiving").getStringList();
+		seaAnimalDefaults = configFile.get("general", "seaAnimals", seaAnimalDefaults,
+				"List of water animals to add as animal lilys. Expected to be water based mobs").getStringList();
+
+		// validate animal lists and process into resource locations
+		animals = processAnimals(animalDefaults);
+		seaAnimals = processAnimals(seaAnimalDefaults);
 
 		if(configFile.hasChanged()) {
 			configFile.save();

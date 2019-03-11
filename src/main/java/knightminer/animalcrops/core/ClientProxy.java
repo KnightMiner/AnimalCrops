@@ -23,6 +23,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class ClientProxy extends CommonProxy {
 	private static final ResourceLocation CROPS_EGG = new ResourceLocation(AnimalCrops.modID, "crops_egg");
+	private static final ResourceLocation LILY_EGG = new ResourceLocation(AnimalCrops.modID, "lily_egg");
 
 	@Override
 	public void preInit() {
@@ -32,6 +33,7 @@ public class ClientProxy extends CommonProxy {
 	@SubscribeEvent
 	public void registerModels(ModelRegistryEvent event) {
 		registerItemModel(AnimalCrops.seeds);
+		registerItemModel(AnimalCrops.lilySeeds);
 		registerItemModel(AnimalCrops.itemBush);
 
 		// fancy means we show the entity model, regular we show an egg
@@ -39,6 +41,7 @@ public class ClientProxy extends CommonProxy {
 			ClientRegistry.bindTileEntitySpecialRenderer(TileAnimalCrops.class, new RenderAnimalCrops());
 		} else {
 			ModelLoader.setCustomStateMapper(AnimalCrops.crops, new NameStateMapper(CROPS_EGG));
+			ModelLoader.setCustomStateMapper(AnimalCrops.lily, new NameStateMapper(LILY_EGG));
 		}
 	}
 
@@ -63,7 +66,7 @@ public class ClientProxy extends CommonProxy {
 					}
 				}
 				return -1;
-			}, AnimalCrops.crops);
+			}, AnimalCrops.crops, AnimalCrops.lily);
 		}
 	}
 
@@ -80,7 +83,7 @@ public class ClientProxy extends CommonProxy {
 			}
 
 			return -1;
-		}, AnimalCrops.seeds);
+		}, AnimalCrops.seeds, AnimalCrops.lilySeeds);
 	}
 
 

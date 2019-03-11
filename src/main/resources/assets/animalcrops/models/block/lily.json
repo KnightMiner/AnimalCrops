@@ -1,0 +1,7 @@
+{
+  "parent": "block/waterlily",
+  "textures": {
+    "particle": "#lily",
+    "texture": "#lily"
+  }
+}

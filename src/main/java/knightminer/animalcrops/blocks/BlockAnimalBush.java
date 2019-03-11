@@ -11,7 +11,6 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
@@ -44,11 +43,17 @@ public class BlockAnimalBush extends BlockBush implements IShearable {
 
     @Override
     public void getDrops(NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
-    	// just find a random seed
-		int count = Config.animals.size();
+    	// just find a random seed from either list
+    	int crops = Config.animals.size();
+		int count = crops + Config.seaAnimals.size();
 		if(count > 0) {
-			ResourceLocation animal = Config.animals.get(RANDOM.nextInt(count));
-			drops.add(AnimalCrops.seeds.makeSeed(animal));
+			int index = RANDOM.nextInt(count);
+			// if the number chosen is bigger than crops, its part of the sea animals
+			if (index >= crops) {
+				drops.add(AnimalCrops.lilySeeds.makeSeed(Config.seaAnimals.get(index - crops)));
+			} else {
+				drops.add(AnimalCrops.seeds.makeSeed(Config.animals.get(index)));
+			}
 		}
     }
 

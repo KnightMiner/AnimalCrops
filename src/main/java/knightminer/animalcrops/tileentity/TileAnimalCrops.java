@@ -29,6 +29,13 @@ public class TileAnimalCrops extends TileEntity {
 		return oldState.getBlock() != newSate.getBlock();
 	}
 
+	private boolean entityValid(ResourceLocation entityID) {
+		if (this.getBlockType() == AnimalCrops.lily) {
+			return Config.seaAnimals.contains(entityID);
+		}
+		return Config.animals.contains(entityID);
+	}
+
 	/**
 	 * Gets the entity stored in this crop, reading from NBT if needed
 	 * @return  The stored entity
@@ -44,7 +51,7 @@ public class TileAnimalCrops extends TileEntity {
 		if(data.hasKey(Utils.ENTITY_TAG, 8)) {
 			// entity must be whitelisted
 			ResourceLocation entityID = new ResourceLocation(data.getString(Utils.ENTITY_TAG));
-			if(!Config.animals.contains(entityID)) {
+			if(!entityValid(entityID)) {
 				if(updateNBT) {
 					clearEntity(true);
 				}

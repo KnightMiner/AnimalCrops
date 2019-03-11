@@ -5,9 +5,11 @@ import org.apache.logging.log4j.Logger;
 
 import knightminer.animalcrops.blocks.BlockAnimalBush;
 import knightminer.animalcrops.blocks.BlockAnimalCrops;
+import knightminer.animalcrops.blocks.BlockAnimalLily;
 import knightminer.animalcrops.core.CommonProxy;
 import knightminer.animalcrops.core.Config;
 import knightminer.animalcrops.core.Utils;
+import knightminer.animalcrops.items.ItemAnimalLily;
 import knightminer.animalcrops.items.ItemAnimalSeeds;
 import knightminer.animalcrops.tileentity.TileAnimalCrops;
 import knightminer.animalcrops.world.WorldGenAnimalCrops;
@@ -35,9 +37,9 @@ public class AnimalCrops {
 	@SidedProxy(clientSide = "knightminer.animalcrops.core.ClientProxy", serverSide = "knightminer.animalcrops.core.CommonProxy")
 	public static CommonProxy proxy;
 
-	public static Block crops;
+	public static Block crops, lily;
 	public static Block bush;
-	public static ItemAnimalSeeds seeds;
+	public static ItemAnimalSeeds seeds, lilySeeds;
 	public static ItemBlock itemBush;
 
 	public static final Logger log = LogManager.getLogger(modID);
@@ -58,6 +60,11 @@ public class AnimalCrops {
 			crops.setUnlocalizedName(modID + ".crops");
 			event.getRegistry().register(crops);
 
+			lily = new BlockAnimalLily();
+			lily.setRegistryName(new ResourceLocation(modID, "lily"));
+			lily.setUnlocalizedName(modID + ".lily");
+			event.getRegistry().register(lily);
+
 			if(Config.animalBush) {
 				bush = new BlockAnimalBush();
 				bush.setRegistryName(new ResourceLocation(modID, "bush"));
@@ -74,6 +81,11 @@ public class AnimalCrops {
 			seeds.setRegistryName(new ResourceLocation(modID, "seeds"));
 			seeds.setUnlocalizedName(modID + ".seeds");
 			event.getRegistry().register(seeds);
+
+			lilySeeds = new ItemAnimalLily(lily);
+			lilySeeds.setRegistryName(new ResourceLocation(modID, "lily"));
+			lilySeeds.setUnlocalizedName(modID + ".lily");
+			event.getRegistry().register(lilySeeds);
 
 			if(Config.animalBush) {
 				itemBush = new ItemBlock(bush);
