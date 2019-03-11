@@ -4,11 +4,11 @@ import knightminer.animalcrops.core.Config;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
-import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
@@ -51,7 +51,6 @@ public class ItemAnimalLily extends ItemAnimalSeeds {
 
     @Override
 	public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
-
     	// need to include liquids in the raytrace
         RayTraceResult trace = this.rayTrace(world, player, true);
         ItemStack seeds = player.getHeldItem(hand);
@@ -69,13 +68,11 @@ public class ItemAnimalLily extends ItemAnimalSeeds {
 
             BlockPos up = pos.up();
             IBlockState state = world.getBlockState(pos);
-            if (state.getMaterial() == Material.WATER && state.getValue(BlockLiquid.LEVEL) == 0 && world.isAirBlock(up)) {
+            if (state.getBlock() == Blocks.WATER && state.getValue(BlockLiquid.LEVEL) == 0 && world.isAirBlock(up)) {
             	IBlockState plant = this.getPlant(world, pos);
-                if(!world.setBlockState(up, plant) || world.getBlockState(up).getBlock() != this.crops) {
-                	return new ActionResult<ItemStack>(EnumActionResult.FAIL, seeds);
+            	if(!world.isRemote && world.setBlockState(up, plant) && world.getBlockState(up).getBlock() == this.crops) {
+                    this.crops.onBlockPlacedBy(world, up, plant, player, seeds);
                 }
-
-                this.crops.onBlockPlacedBy(world, up, plant, player, seeds);
 
                 if (player instanceof EntityPlayerMP) {
                     CriteriaTriggers.PLACED_BLOCK.trigger((EntityPlayerMP)player, up, seeds);

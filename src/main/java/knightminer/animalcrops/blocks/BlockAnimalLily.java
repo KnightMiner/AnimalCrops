@@ -6,6 +6,7 @@ import javax.annotation.Nullable;
 
 import knightminer.animalcrops.AnimalCrops;
 import knightminer.animalcrops.items.ItemAnimalSeeds;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
@@ -33,7 +34,8 @@ public class BlockAnimalLily extends BlockAnimalCrops {
 
     @Override
 	public boolean canSustainBush(IBlockState state) {
-        return state.getBlock() == Blocks.WATER && state.getValue(BlockLiquid.LEVEL) == 0;
+    	Block block = state.getBlock();
+        return (block == Blocks.WATER || block == Blocks.FLOWING_WATER) && state.getValue(BlockLiquid.LEVEL) == 0;
     }
 
     /* New Bounds */
