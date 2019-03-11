@@ -22,6 +22,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
@@ -73,7 +74,7 @@ public class BlockAnimalCrops extends BlockCrops implements ITileEntityProvider 
 
     // do not drop anything if max age, no seed drops basically
     @Override
-    public void getDrops(net.minecraft.util.NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
+    public void getDrops(NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
         if(getAge(state) < getMaxAge() || (Config.seedDropChance > 0 && RANDOM.nextInt(Config.seedDropChance) == 0)) {
     		drops.add(getSeedItem(world, pos));
         }

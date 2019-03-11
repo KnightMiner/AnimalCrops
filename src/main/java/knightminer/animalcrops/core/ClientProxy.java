@@ -12,6 +12,7 @@ import net.minecraft.client.renderer.block.statemap.StateMapperBase;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityList.EntityEggInfo;
 import net.minecraft.item.Item;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.ColorHandlerEvent;
@@ -51,6 +52,14 @@ public class ClientProxy extends CommonProxy {
 		}
 	}
 
+	private static int getEggColor(NBTTagCompound tags, int index) {
+        EntityEggInfo egg = EntityList.ENTITY_EGGS.get(Utils.getEntityID(tags));
+        if (egg != null) {
+            return index == 0 ? egg.primaryColor : egg.secondaryColor;
+        }
+        return -1;
+	}
+
 	@SubscribeEvent
 	public void registerBlockColors(ColorHandlerEvent.Block event) {
 		// when not fancy, we have a colored egg in the middle
@@ -59,10 +68,7 @@ public class ClientProxy extends CommonProxy {
 				if((index == 0 || index == 1) && state.getValue(BlockCrops.AGE) > 1) {
 					TileEntity te = world.getTileEntity(pos);
 					if(te instanceof TileAnimalCrops) {
-			            EntityEggInfo egg = EntityList.ENTITY_EGGS.get(Utils.getEntityID(te.getTileData()));
-			            if (egg != null) {
-			                return index == 0 ? egg.primaryColor : egg.secondaryColor;
-			            }
+						return getEggColor(te.getTileData(), index);
 					}
 				}
 				return -1;
@@ -75,11 +81,7 @@ public class ClientProxy extends CommonProxy {
 		event.getItemColors().registerItemColorHandler((stack, index) -> {
 			// only use first two indexes
 			if(index == 0 || index == 1) {
-				// grab egg info and use to color
-	            EntityEggInfo egg = EntityList.ENTITY_EGGS.get(Utils.getEntityID(stack.getTagCompound()));
-	            if (egg != null) {
-	                return index == 0 ? egg.primaryColor : egg.secondaryColor;
-	            }
+				return getEggColor(stack.getTagCompound(), index);
 			}
 
 			return -1;

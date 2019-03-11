@@ -132,6 +132,12 @@ public class TileAnimalCrops extends TileEntity {
 		if(world.isRemote || entityID == null) {
 			return;
 		}
+
+		// only set if valid
+		if (!entityValid(entityID)) {
+			return;
+		}
+
 		this.getTileData().setString(Utils.ENTITY_TAG, entityID.toString());
 		// if we have fancy rendering, create the entity now so the client can grab it
 		if(Config.fancyCropRendering) {
