@@ -30,10 +30,7 @@ public class TileAnimalCrops extends TileEntity {
 	}
 
 	private boolean entityValid(ResourceLocation entityID) {
-		if (this.getBlockType() == AnimalCrops.lily) {
-			return Config.seaAnimals.contains(entityID);
-		}
-		return Config.animals.contains(entityID);
+		return Config.seaAnimals.contains(entityID) || Config.animals.contains(entityID);
 	}
 
 	/**
