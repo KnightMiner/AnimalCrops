@@ -75,7 +75,7 @@ public class BlockAnimalCrops extends BlockCrops implements ITileEntityProvider 
     // do not drop anything if max age, no seed drops basically
     @Override
     public void getDrops(NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
-        if(getAge(state) < getMaxAge() || (Config.seedDropChance > 0 && RANDOM.nextInt(Config.seedDropChance) == 0)) {
+        if(getAge(state) < getMaxAge() || Config.seedDropChance > RANDOM.nextInt(100)) {
     		drops.add(getSeedItem(world, pos));
         }
     }
@@ -109,7 +109,7 @@ public class BlockAnimalCrops extends BlockCrops implements ITileEntityProvider 
         	// if a drop chance exists, try to drop it
         	// skip on the client side though, so our randoms don't disagree.
         	// If the server replaces it the client will get the update as long as the client removes the old block
-        	if(!world.isRemote && Config.seedDropChance > 0 && RANDOM.nextInt(Config.seedDropChance) == 0) {
+        	if(!world.isRemote && Config.seedDropChance > 0 RANDOM.nextInt(100)) {
         		// if successful, we need to spawn and reset the entity then the state
         		TileEntity te = world.getTileEntity(pos);
             	if(te instanceof TileAnimalCrops) {
