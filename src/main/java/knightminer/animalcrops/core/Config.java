@@ -58,7 +58,7 @@ public class Config {
 		rightClickHarvest = configFile.getBoolean("rightClickHarvest", "crop", rightClickHarvest,
 				"Harvests the crop on right click (which is really the same as just breaking it). Added because people cannot write their right click harvest mods right.");
 		seedDropChance = configFile.getInt("seedDropChance", "crop", seedDropChance, 0, 100,
-				"Chance for an animal crop to drop a seed if fully grown in addition to the animal. Formula is a 1 in <chance> chance of dropping. Set to 0 to never drop seeds, and 1 to always drop");
+				"Percentage chance for an animal crop to drop a seed if fully grown in addition to the animal. Set to 0 to never drop seeds, and 100 to always drop");
 
 		// bush
 		configFile.moveProperty("general", "animalBush", "bush");
