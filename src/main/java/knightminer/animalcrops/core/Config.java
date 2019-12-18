@@ -22,13 +22,16 @@ public class Config {
 
 	public static ConfigValue<List<? extends String>> animalCrops;
 	private static final List<String> ANIMAL_CROP_DEFAULTS = ImmutableList.of(
+			"minecraft:cat",
 			"minecraft:chicken",
 			"minecraft:cow",
 			"minecraft:donkey",
+			"minecraft:fox",
 			"minecraft:horse",
 			"minecraft:llama",
 			"minecraft:mooshroom",
 			"minecraft:ocelot",
+			"minecraft:panda",
 			"minecraft:parrot",
 			"minecraft:pig",
 			"minecraft:polar_bear",
@@ -39,7 +42,13 @@ public class Config {
 			"waddles:adelie_penguin");
 	public static ConfigValue<List<? extends String>> animalLilies;
 	private static final List<String> ANIMAL_LILY_DEFAULTS = ImmutableList.of(
-			"minecraft:squid");
+			"minecraft:cod",
+			"minecraft:dolphin",
+			"minecraft:pufferfish",
+			"minecraft:salmon",
+			"minecraft:squid",
+			"minecraft:tropical_fish",
+			"minecraft:turtle");
 
 	// crop
 	public static BooleanValue canBonemeal;
