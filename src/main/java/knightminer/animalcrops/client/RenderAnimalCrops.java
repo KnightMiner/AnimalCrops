@@ -18,7 +18,7 @@ public class RenderAnimalCrops extends TileEntityRenderer<TileAnimalCrops> {
       return;
     }
 
-    MobEntity entity = te.getEntity(false);
+    MobEntity entity = te.getEntity(true);
     if(entity == null) {
       return;
     }

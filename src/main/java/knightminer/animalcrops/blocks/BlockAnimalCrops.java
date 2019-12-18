@@ -67,7 +67,7 @@ public class BlockAnimalCrops extends CropsBlock {
 		// set the crop's entity
 		TileEntity te = world.getTileEntity(pos);
 		if(te instanceof TileAnimalCrops) {
-			Utils.getEntityID(stack.getTag()).ifPresent((id) -> ((TileAnimalCrops)te).setAnimal(id));
+			Utils.getEntityID(stack.getTag()).ifPresent((id) -> ((TileAnimalCrops)te).setEntity(id));
 		}
 	}
 
@@ -81,8 +81,6 @@ public class BlockAnimalCrops extends CropsBlock {
 			if(te instanceof TileAnimalCrops) {
 				if(getAge(state) >= getMaxAge()) {
 					((TileAnimalCrops)te).spawnAnimal();
-				} else {
-					((TileAnimalCrops)te).setDead();
 				}
 			}
 
@@ -92,7 +90,7 @@ public class BlockAnimalCrops extends CropsBlock {
 		} else if(state.getBlock() == this && getAge(state) >= getMaxAge() && getAge(newState) < getMaxAge()) {
 			TileEntity te = world.getTileEntity(pos);
 			if(te instanceof TileAnimalCrops) {
-				((TileAnimalCrops)te).spawnAndReset();
+				((TileAnimalCrops)te).spawnAnimal();
 			}
 		}
 	}
