@@ -1,8 +1,10 @@
 package knightminer.animalcrops.core;
 
 import knightminer.animalcrops.AnimalCrops;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.monster.SlimeEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.SpawnEggItem;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 
@@ -48,6 +50,16 @@ public abstract class Utils {
     }
     stack.getOrCreateTag().putString(ENTITY_TAG, entity);
     return stack;
+  }
+
+  /**
+   * Gets the SpawnEggItem for the given entity type.
+   * Required as {@link SpawnEggItem::getEgg(EntityType<?>)} is clientside only.
+   * @param type  Entity type for the egg
+   * @return  Spawn egg for the entity type
+   */
+  public static SpawnEggItem getEgg(EntityType<?> type) {
+    return SpawnEggItem.EGGS.get(type);
   }
 
   /**

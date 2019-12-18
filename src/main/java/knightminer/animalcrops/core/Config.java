@@ -127,7 +127,7 @@ public class Config {
 		}
 
 		// must have a spawn egg, use that for colors
-		SpawnEggItem item = SpawnEggItem.getEgg(type);
+		SpawnEggItem item = Utils.getEgg(type);
 		if(item == null) {
 			AnimalCrops.log.error("Invalid entity {}, must have a spawn egg", animal);
 			return false;
