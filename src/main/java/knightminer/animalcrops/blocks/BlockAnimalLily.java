@@ -1,67 +1,53 @@
 package knightminer.animalcrops.blocks;
 
-import java.util.List;
-
-import javax.annotation.Nullable;
-
-import knightminer.animalcrops.AnimalCrops;
+import knightminer.animalcrops.core.Registration;
 import knightminer.animalcrops.items.ItemAnimalSeeds;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockLiquid;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.item.EntityBoat;
-import net.minecraft.init.Blocks;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.entity.item.BoatEntity;
+import net.minecraft.fluid.IFluidState;
+import net.minecraft.tags.FluidTags;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.util.math.shapes.ISelectionContext;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
-import net.minecraftforge.common.EnumPlantType;
+import net.minecraftforge.common.PlantType;
 
 public class BlockAnimalLily extends BlockAnimalCrops {
 
-    @Override
-	protected ItemAnimalSeeds getSeed() {
-        return AnimalCrops.lilySeeds;
+  protected static final VoxelShape LILY_PAD_AABB = makeCuboidShape(1, 0, 1, 15, 1, 15);
+
+  /* Block properties */
+
+  @Override
+  protected ItemAnimalSeeds getSeed() {
+    return Registration.lilySeeds;
+  }
+
+  @Override
+  public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+    return LILY_PAD_AABB;
+  }
+
+  /* Water logic */
+
+  @Override
+  protected boolean isValidGround(BlockState state, IBlockReader worldIn, BlockPos pos) {
+    IFluidState fluid = state.getFluidState();
+    return fluid.getFluid().isIn(FluidTags.WATER) && fluid.isSource();
+  }
+
+  @Override
+  public PlantType getPlantType(IBlockReader world, BlockPos pos) {
+    return PlantType.Water;
+  }
+
+  @Override
+  public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
+    super.onEntityCollision(state, world, pos, entity);
+    if (entity instanceof BoatEntity) {
+      world.destroyBlock(new BlockPos(pos), true);
     }
-
-    /* Water logic */
-
-    @Override
-    public EnumPlantType getPlantType(IBlockAccess world, BlockPos pos) {
-        return EnumPlantType.Water;
-    }
-
-    @Override
-	public boolean canSustainBush(IBlockState state) {
-    	Block block = state.getBlock();
-        return (block == Blocks.WATER || block == Blocks.FLOWING_WATER) && state.getValue(BlockLiquid.LEVEL) == 0;
-    }
-
-    /* New Bounds */
-
-    protected static final AxisAlignedBB LILY_AABB = new AxisAlignedBB(0.0625D, 0.0D, 0.0625D, 0.9375D, 0.09375D, 0.9375D);
-
-    @Override
-	public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-        return LILY_AABB;
-    }
-
-    /* Boats break block like lily pads */
-
-    @Override
-	public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn, boolean p_185477_7_) {
-        if (!(entityIn instanceof EntityBoat)) {
-            addCollisionBoxToList(pos, entityBox, collidingBoxes, LILY_AABB);
-        }
-    }
-
-    @Override
-	public void onEntityCollidedWithBlock(World world, BlockPos pos, IBlockState state, Entity entity) {
-        super.onEntityCollidedWithBlock(world, pos, state, entity);
-
-        if (entity instanceof EntityBoat) {
-            world.destroyBlock(new BlockPos(pos), true);
-        }
-    }
+  }
 }

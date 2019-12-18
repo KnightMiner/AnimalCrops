@@ -1,53 +1,59 @@
 package knightminer.animalcrops.tileentity;
 
-import javax.annotation.Nonnull;
-
 import knightminer.animalcrops.AnimalCrops;
 import knightminer.animalcrops.core.Config;
+import knightminer.animalcrops.core.Registration;
 import knightminer.animalcrops.core.Utils;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.AgeableEntity;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityAgeable;
-import net.minecraft.entity.EntityList;
-import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.monster.EntitySlime;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.MobEntity;
+import net.minecraft.entity.SpawnReason;
+import net.minecraft.entity.monster.SlimeEntity;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SPacketUpdateTileEntity;
+import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
+import javax.annotation.Nonnull;
+
 public class TileAnimalCrops extends TileEntity {
 	public static final String ENTITY_DATA_TAG = "entity_data";
 
-	private EntityLiving entity;
-	@Override
-	public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newSate) {
-		return oldState.getBlock() != newSate.getBlock();
+	private MobEntity entity;
+
+	public TileAnimalCrops() {
+		super(Registration.cropsTE);
 	}
 
-	private boolean entityValid(ResourceLocation entityID) {
-		return Config.seaAnimals.contains(entityID) || Config.animals.contains(entityID);
+	/**
+	 * Checks if the entity is valid for this crop block
+	 * @param entityID  ID to check
+	 * @return  True if the ID is valid, false otherwise
+	 */
+	private boolean entityValid(String entityID) {
+		return Config.animalCrops.get().contains(entityID) || Config.animalLilies.get().contains(entityID);
 	}
 
 	/**
 	 * Gets the entity stored in this crop, reading from NBT if needed
 	 * @return  The stored entity
 	 */
-	public EntityLiving getEntity(boolean updateNBT) {
+	public MobEntity getEntity(boolean updateNBT) {
+		// TODO: this function is a pretty big mess, see if it can be cleaned up
 		// if we have an entity, return that
 		if(entity != null) {
 			return entity;
 		}
 
 		// if an entity is set, we can create an entity
-		NBTTagCompound data = this.getTileData();
-		if(data.hasKey(Utils.ENTITY_TAG, 8)) {
+		CompoundNBT data = this.getTileData();
+		String entityID = Utils.getEntityID(data).orElse(null);
+		if(entityID != null) {
 			// entity must be whitelisted
-			ResourceLocation entityID = new ResourceLocation(data.getString(Utils.ENTITY_TAG));
 			if(!entityValid(entityID)) {
 				if(updateNBT) {
 					clearEntity(true);
@@ -55,56 +61,60 @@ public class TileAnimalCrops extends TileEntity {
 				return null;
 			}
 
-			// entity must be entity ageable
-			Entity entityFromName = EntityList.createEntityByIDFromName(entityID, world);
-			if(!(entityFromName instanceof EntityLiving)) {
-				entityFromName.setDead();
+			// entity must be entity mob entity
+			EntityType<?> type = EntityType.byKey(entityID.toString()).orElse(null);
+			if (type == null) { // || !MobEntity.class.isAssignableFrom(type.getClass())) {
 				clearEntity(true);
 				return null;
 			}
 
-			// we have the proper type
-	    	entity = (EntityLiving)entityFromName;
+			Entity created = type.create(world);
+			if (!(created instanceof MobEntity)) {
+				created.remove();
+				clearEntity(true);
+				return null;
+			}
+			entity = (MobEntity)created;
 
 			// if we have NBT already, use that
-			if(data.hasKey(ENTITY_DATA_TAG, 10)) {
-				NBTTagCompound entityData = data.getCompoundTag(ENTITY_DATA_TAG);
+			if(data.contains(ENTITY_DATA_TAG, 10)) {
+				CompoundNBT entityData = data.getCompound(ENTITY_DATA_TAG);
 				try {
-					entity.readFromNBT(entityData);
+					entity.read(entityData);
 					// set for the client, since prev is needed for rotation but not stored to NBT
-			        entity.prevRenderYawOffset = entity.prevRotationYawHead = entity.prevRotationYaw = entity.rotationYaw;
+					entity.prevRenderYawOffset = entity.prevRotationYawHead = entity.prevRotationYaw = entity.rotationYaw;
 					return entity;
 				} catch(Exception ex) {
 					AnimalCrops.log.error("Exception caught loading entity from NBT", ex);
 					if(updateNBT) {
-						data.removeTag(ENTITY_DATA_TAG);
+						data.remove(ENTITY_DATA_TAG);
 					}
 				}
 			}
 
 			// if we do not have NBT or it was bad, set entity data
-			if(entity instanceof EntityAgeable) {
-				((EntityAgeable)entity).setGrowingAge(-24000);
+			if(entity instanceof AgeableEntity) {
+				((AgeableEntity)entity).setGrowingAge(-24000);
 			}
-	        entity.onInitialSpawn(world.getDifficultyForLocation(new BlockPos(entity)), null);
+			entity.onInitialSpawn(world, world.getDifficultyForLocation(new BlockPos(entity)), SpawnReason.SPAWN_EGG, null, null);
 
-	        // slime sizes should not be bigger than 2
-	        if(entity instanceof EntitySlime) {
-	        	EntitySlime slime = (EntitySlime)entity;
-	        	if(slime.getSlimeSize() > 2) {
-	        		Utils.setSlimeSize(slime, 2);
-	        	}
-	        }
+			// slime sizes should not be bigger than 2
+			if(entity instanceof SlimeEntity) {
+				SlimeEntity slime = (SlimeEntity)entity;
+				if(slime.getSlimeSize() > 2) {
+					Utils.setSlimeSize(slime, 2);
+				}
+			}
 
-	        entity.rotationYaw = MathHelper.wrapDegrees(world.rand.nextInt(4) * 90.0F); // face randomly in one of 4 directions
-	        entity.rotationYawHead = entity.rotationYaw;
-	        entity.renderYawOffset = entity.rotationYaw;
-	        if(updateNBT) {
-	        	data.setTag(ENTITY_DATA_TAG, entity.writeToNBT(new NBTTagCompound()));
-	        }
+			entity.rotationYaw = MathHelper.wrapDegrees(world.rand.nextInt(4) * 90.0F); // face randomly in one of 4 directions
+			entity.rotationYawHead = entity.rotationYaw;
+			entity.renderYawOffset = entity.rotationYaw;
+			if(updateNBT) {
+				data.put(ENTITY_DATA_TAG, entity.writeWithoutTypeId(new CompoundNBT()));
+			}
 			this.markDirty();
 		}
-	    return entity;
+		return entity;
 	}
 
 	/**
@@ -113,11 +123,11 @@ public class TileAnimalCrops extends TileEntity {
 	 */
 	private void clearEntity(boolean clearType) {
 		entity = null;
-		NBTTagCompound data = this.getTileData();
+		CompoundNBT data = this.getTileData();
 		if(clearType) {
-			data.removeTag(Utils.ENTITY_TAG);
+			data.remove(Utils.ENTITY_TAG);
 		}
-		data.removeTag(ENTITY_DATA_TAG);
+		data.remove(ENTITY_DATA_TAG);
 		this.markDirty();
 	}
 
@@ -125,7 +135,7 @@ public class TileAnimalCrops extends TileEntity {
 	 * Sets the entity into the TE
 	 * @param entityID  Entity ID to set
 	 */
-	public void setAnimal(ResourceLocation entityID) {
+	public void setAnimal(String entityID) {
 		if(world.isRemote || entityID == null) {
 			return;
 		}
@@ -135,9 +145,10 @@ public class TileAnimalCrops extends TileEntity {
 			return;
 		}
 
-		this.getTileData().setString(Utils.ENTITY_TAG, entityID.toString());
+		this.getTileData().putString(Utils.ENTITY_TAG, entityID);
 		// if we have fancy rendering, create the entity now so the client can grab it
-		if(Config.fancyCropRendering) {
+		// TODO: not good to do serverside?
+		if(Config.fancyCropRendering.get()) {
 			getEntity(true);
 		}
 		this.markDirty();
@@ -152,14 +163,14 @@ public class TileAnimalCrops extends TileEntity {
 			return;
 		}
 
-        // set position
-        entity.setPosition(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5);
+		// set position
+		entity.setPosition(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5);
 
-        // spawn
+		// spawn
 		entity.setWorld(world);
-        world.spawnEntity(entity);
-        entity.playLivingSound();
-    }
+		world.addEntity(entity);
+		entity.playAmbientSound();
+	}
 
 	/**
 	 * Spawns the entity then resets the crop's NBT
@@ -167,7 +178,8 @@ public class TileAnimalCrops extends TileEntity {
 	public void spawnAndReset() {
 		spawnAnimal();
 		clearEntity(false);
-		if(Config.fancyCropRendering) {
+		// TODO: should not be serverside?
+		if(Config.fancyCropRendering.get()) {
 			getEntity(true);
 			markDirty();
 		}
@@ -175,7 +187,7 @@ public class TileAnimalCrops extends TileEntity {
 
 	public void setDead() {
 		if(entity != null) {
-			entity.setDead();
+			entity.remove();
 		}
 	}
 
@@ -191,21 +203,21 @@ public class TileAnimalCrops extends TileEntity {
 
 	@Nonnull
 	@Override
-	public NBTTagCompound getUpdateTag() {
+	public CompoundNBT getUpdateTag() {
 		// new tag instead of super since default implementation calls the super of writeToNBT
-		return writeToNBT(new NBTTagCompound());
+		return write(new CompoundNBT());
 	}
 
 	@Override
-	public SPacketUpdateTileEntity getUpdatePacket() {
+	public SUpdateTileEntityPacket getUpdatePacket() {
 		// note that this sends all of the tile data. you should change this if you use additional tile data
-		NBTTagCompound tag = writeToNBT(new NBTTagCompound());
-		return new SPacketUpdateTileEntity(this.getPos(), this.getBlockMetadata(), tag);
+		CompoundNBT tag = write(new CompoundNBT());
+		return new SUpdateTileEntityPacket(this.getPos(), 0, tag);
 	}
 
 	@Override
-	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
-		NBTTagCompound tag = pkt.getNbtCompound();
-		readFromNBT(tag);
+	public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
+		CompoundNBT tag = pkt.getNbtCompound();
+		read(tag);
 	}
 }

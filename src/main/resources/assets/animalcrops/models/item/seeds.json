@@ -1,7 +1,7 @@
 {
     "parent": "item/generated",
     "textures": {
-        "layer0": "animalcrops:items/seeds",
-        "layer1": "animalcrops:items/seeds_overlay"
+        "layer0": "animalcrops:item/seeds",
+        "layer1": "animalcrops:item/seeds_overlay"
     }
 }

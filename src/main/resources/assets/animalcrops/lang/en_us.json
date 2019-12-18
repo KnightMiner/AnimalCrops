@@ -1,0 +1,10 @@
+{
+  "block.animalcrops.crops": "Animal Crops",
+  "block.animalcrops.bush": "Animal Bush",
+  "block.animalcrops.lily": "Animal Lily",
+  
+  "item.animalcrops.seeds": "%s Seeds",
+  "item.animalcrops.seeds.default": "Animal Seeds",
+  "item.animalcrops.lily": "%s Lily",
+  "item.animalcrops.lily.default": "Animal Lily"  
+}

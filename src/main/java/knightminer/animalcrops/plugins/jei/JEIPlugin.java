@@ -1,22 +1,27 @@
 package knightminer.animalcrops.plugins.jei;
 
 import knightminer.animalcrops.AnimalCrops;
+import knightminer.animalcrops.core.Registration;
 import knightminer.animalcrops.core.Utils;
 import mezz.jei.api.IModPlugin;
-import mezz.jei.api.ISubtypeRegistry;
-import mezz.jei.api.ISubtypeRegistry.ISubtypeInterpreter;
+import mezz.jei.api.JeiPlugin;
+import mezz.jei.api.ingredients.subtypes.ISubtypeInterpreter;
+import mezz.jei.api.registration.ISubtypeRegistration;
 import net.minecraft.util.ResourceLocation;
 
-@mezz.jei.api.JEIPlugin
+@JeiPlugin
 public class JEIPlugin implements IModPlugin {
 
-	  @Override
-	  public void registerItemSubtypes(ISubtypeRegistry registry) {
-		  ISubtypeInterpreter interpreter = (stack) -> {
-			  ResourceLocation loc = Utils.getEntityID(stack.getTagCompound());
-			  return loc != null ? loc.toString() : "";
-		  };
-		  registry.registerSubtypeInterpreter(AnimalCrops.seeds, interpreter);
-		  registry.registerSubtypeInterpreter(AnimalCrops.lilySeeds, interpreter);
-	  }
+	@Override
+	public ResourceLocation getPluginUid() {
+		return new ResourceLocation(AnimalCrops.modID, "jei");
+	}
+
+	@Override
+	public void registerItemSubtypes(ISubtypeRegistration registry) {
+		ISubtypeInterpreter interpreter = (stack) -> Utils.getEntityID(stack.getTag()).orElse("");
+
+		registry.registerSubtypeInterpreter(Registration.seeds, interpreter);
+		registry.registerSubtypeInterpreter(Registration.lilySeeds, interpreter);
+	}
 }

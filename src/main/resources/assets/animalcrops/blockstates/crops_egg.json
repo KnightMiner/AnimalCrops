@@ -1,18 +1,18 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "cross"
+    "model": "block/cross"
   },
   "variants": {
     "age": {
-      "0": { "textures": { "cross": "animalcrops:blocks/crops_0" }},
-      "1": { "textures": { "cross": "animalcrops:blocks/crops_1" }},
-      "2": { "model": "animalcrops:egg_2" },
-      "3": { "model": "animalcrops:egg_3" },
-      "4": { "model": "animalcrops:egg_4" },
-      "5": { "model": "animalcrops:egg_5" },
-      "6": { "model": "animalcrops:egg_6" },
-      "7": { "model": "animalcrops:egg_7" }
+      "0": { "textures": { "cross": "animalcrops:block/crops_0" }},
+      "1": { "textures": { "cross": "animalcrops:block/crops_1" }},
+      "2": { "model": "animalcrops:block/egg_2" },
+      "3": { "model": "animalcrops:block/egg_3" },
+      "4": { "model": "animalcrops:block/egg_4" },
+      "5": { "model": "animalcrops:block/egg_5" },
+      "6": { "model": "animalcrops:block/egg_6" },
+      "7": { "model": "animalcrops:block/egg_7" }
     }
   }
 }

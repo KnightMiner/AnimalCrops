@@ -2,16 +2,9 @@
   "forge_marker": 1,
   "variants": {
     "normal": {
-      "model": "cross",
+      "model": "block/cross",
       "textures": {
-        "cross": "animalcrops:blocks/crops_7"
-      }
-    },
-    "inventory": {
-      "transform": "forge:default-item",
-      "model": "forge:item-layer",
-      "textures": {
-        "layer0": "animalcrops:blocks/crops_7"
+        "cross": "animalcrops:block/crops_7"
       }
     }
   }

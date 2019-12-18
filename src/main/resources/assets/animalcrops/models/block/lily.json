@@ -1,5 +1,5 @@
 {
-  "parent": "block/waterlily",
+  "parent": "block/lily_pad",
   "textures": {
     "particle": "#lily",
     "texture": "#lily"

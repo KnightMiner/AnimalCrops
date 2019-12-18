@@ -1,9 +1,9 @@
 {
   "textures": {
-    "particle": "animalcrops:blocks/lily_6",
-    "lily": "animalcrops:blocks/lily_6",
-    "egg": "animalcrops:blocks/egg",
-    "overlay": "animalcrops:blocks/egg_overlay"
+    "particle": "animalcrops:block/lily_6",
+    "lily": "animalcrops:block/lily_6",
+    "egg": "animalcrops:block/egg",
+    "overlay": "animalcrops:block/egg_overlay"
   },
   "elements": [
     {

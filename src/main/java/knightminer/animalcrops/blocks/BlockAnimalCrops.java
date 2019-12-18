@@ -1,161 +1,122 @@
 package knightminer.animalcrops.blocks;
 
-import java.util.Random;
-
-import javax.annotation.Nonnull;
-
-import knightminer.animalcrops.AnimalCrops;
 import knightminer.animalcrops.core.Config;
+import knightminer.animalcrops.core.Registration;
 import knightminer.animalcrops.core.Utils;
 import knightminer.animalcrops.items.ItemAnimalSeeds;
 import knightminer.animalcrops.tileentity.TileAnimalCrops;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockCrops;
-import net.minecraft.block.BlockGrass;
-import net.minecraft.block.ITileEntityProvider;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
-import net.minecraft.item.Item;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.CropsBlock;
+import net.minecraft.block.SoundType;
+import net.minecraft.block.material.Material;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
-public class BlockAnimalCrops extends BlockCrops implements ITileEntityProvider {
+import javax.annotation.Nonnull;
+import java.util.Random;
 
-    public BlockAnimalCrops() {
-    	super();
-    	this.isBlockContainer = true;
-    }
+public class BlockAnimalCrops extends CropsBlock {
 
-    /* Seed logic */
-
-	@Override
-	public TileEntity createNewTileEntity(World worldIn, int meta) {
-		return new TileAnimalCrops();
+	public BlockAnimalCrops() {
+		super(Properties.create(Material.PLANTS)
+										.doesNotBlockMovement()
+										.tickRandomly()
+										.hardnessAndResistance(0)
+										.sound(SoundType.CROP));
 	}
 
-    @Override
-	public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack){
-        // set the crop's entity
-        TileEntity te = world.getTileEntity(pos);
-        if(te instanceof TileAnimalCrops) {
-        	((TileAnimalCrops)te).setAnimal(Utils.getEntityID(stack.getTagCompound()));
-        }
-    }
+	/* Crop properties */
 
-    @Override
-	public void breakBlock(World world, BlockPos pos, IBlockState state) {
-    	TileEntity te = world.getTileEntity(pos);
-    	if(te instanceof TileAnimalCrops) {
-        	if(getAge(state) >= getMaxAge()) {
-        		((TileAnimalCrops)te).spawnAnimal();
-        	} else {
-        		((TileAnimalCrops)te).setDead();
-        	}
-    	}
+	@Override
+	protected boolean isValidGround(BlockState state, IBlockReader worldIn, BlockPos pos) {
+		return state.getBlock() == Blocks.GRASS_BLOCK;
+	}
 
-    	super.breakBlock(world, pos, state);
-    }
+	/**
+	 * Gets the seed item for this crop
+	 * @return  Item for this crop
+	 */
+	protected ItemAnimalSeeds getSeed() {
+		return Registration.seeds;
+	}
+
+
+	/* Seed logic */
+
+	@Override
+	public boolean hasTileEntity(BlockState state) {
+		return true;
+	}
 
 	@Nonnull
 	@Override
-	public ItemStack getPickBlock(@Nonnull IBlockState state, RayTraceResult target, @Nonnull World world, @Nonnull BlockPos pos, EntityPlayer player) {
-		return getSeedItem(world, pos);
-	}
-
-    // do not drop anything if max age, no seed drops basically
-    @Override
-    public void getDrops(NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
-        if(getAge(state) < getMaxAge() || (Config.seedDropChance > 0 && RANDOM.nextInt(Config.seedDropChance) == 0)) {
-    		drops.add(getSeedItem(world, pos));
-        }
-    }
-
-	private ItemStack getSeedItem(IBlockAccess world, BlockPos pos) {
-		TileEntity te = world.getTileEntity(pos);
-		if(te instanceof TileAnimalCrops) {
-			return getSeed().makeSeed(Utils.getEntityID(((TileAnimalCrops)te).getTileData()));
-		}
-		return new ItemStack(getSeed());
+	public TileEntity createTileEntity(BlockState state, IBlockReader world) {
+		return new TileAnimalCrops();
 	}
 
 	@Override
-	public boolean removedByPlayer(@Nonnull IBlockState state, @Nonnull World world, @Nonnull BlockPos pos, @Nonnull EntityPlayer player, boolean willHarvest) {
-		// we pull up a few calls to this point in time because we still have the TE here
-		// the execution otherwise is equivalent to vanilla order
-		this.onBlockDestroyedByPlayer(world, pos, state);
-		if(willHarvest) {
-			this.harvestBlock(world, player, pos, state, world.getTileEntity(pos), player.getHeldItemMainhand());
+	public void onBlockPlacedBy(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
+		// set the crop's entity
+		TileEntity te = world.getTileEntity(pos);
+		if(te instanceof TileAnimalCrops) {
+			Utils.getEntityID(stack.getTag()).ifPresent((id) -> ((TileAnimalCrops)te).setAnimal(id));
 		}
-
-		world.setBlockToAir(pos);
-		// return false to prevent the above called functions to be called again
-		// side effect of this is that no xp will be dropped
-		return false;
 	}
 
-    @Override
-	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-        if(Config.rightClickHarvest && getAge(state) >= this.getMaxAge()) {
-        	// if a drop chance exists, try to drop it
-        	// skip on the client side though, so our randoms don't disagree.
-        	// If the server replaces it the client will get the update as long as the client removes the old block
-        	if(!world.isRemote && Config.seedDropChance > 0 && RANDOM.nextInt(Config.seedDropChance) == 0) {
-        		// if successful, we need to spawn and reset the entity then the state
-        		TileEntity te = world.getTileEntity(pos);
-            	if(te instanceof TileAnimalCrops) {
-            		((TileAnimalCrops)te).spawnAndReset();
-            	}
-                world.playEvent(2001, pos, Block.getStateId(state));
-        		world.setBlockState(pos, state.withProperty(AGE, 0));
-        	} else {
-            	world.destroyBlock(pos, false);
-        	}
-        	return true;
-        }
-    	return false;
-    }
+	@Deprecated
+	@Override
+	public void onReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
+		// if the block changed, spawn the animal
+		if(state.getBlock() != newState.getBlock()) {
+			// assuming we have the tile entity to use
+			TileEntity te = world.getTileEntity(pos);
+			if(te instanceof TileAnimalCrops) {
+				if(getAge(state) >= getMaxAge()) {
+					((TileAnimalCrops)te).spawnAnimal();
+				} else {
+					((TileAnimalCrops)te).setDead();
+				}
+			}
+
+			super.onReplaced(state, world, pos, newState, isMoving);
+			// otherwise, if the age lowered from max, spawn the animal
+			// for right click harvest
+		} else if(state.getBlock() == this && getAge(state) >= getMaxAge() && getAge(newState) < getMaxAge()) {
+			TileEntity te = world.getTileEntity(pos);
+			if(te instanceof TileAnimalCrops) {
+				((TileAnimalCrops)te).spawnAndReset();
+			}
+		}
+	}
+
+	@Override
+	public ItemStack getPickBlock(BlockState state, RayTraceResult target, IBlockReader world, BlockPos pos, PlayerEntity player) {
+		TileEntity te = world.getTileEntity(pos);
+		ItemStack stack = new ItemStack(getSeed());
+		if(te != null) {
+			Utils.getEntityID(te.getTileData()).ifPresent((id)->Utils.setEntityId(stack, id));
+		}
+		return stack;
+	}
 
 
-    /* Crop properties */
+	/* Bonemeal */
 
-    @Override
-	protected boolean canSustainBush(IBlockState state) {
-        return state.getBlock() instanceof BlockGrass;
-    }
+	@Override
+	public boolean canUseBonemeal(World worldIn, Random rand, BlockPos pos, BlockState state) {
+		return Config.canBonemeal.get();
+	}
 
-    @Override
-	public boolean canBlockStay(World world, BlockPos pos, IBlockState state) {
-        return (world.getLight(pos) >= 8 || world.canSeeSky(pos)) && canSustainBush(world.getBlockState(pos.down()));
-    }
-
-    @Override
-	protected Item getCrop() {
-        return Items.AIR;
-    }
-
-    @Override
-	public boolean canUseBonemeal(World worldIn, Random rand, BlockPos pos, IBlockState state) {
-        return Config.canBonemeal;
-    }
-
-    @Override
-	protected ItemAnimalSeeds getSeed() {
-        return AnimalCrops.seeds;
-    }
-
-    @Override
-	protected int getBonemealAgeIncrease(World worldIn) {
-        return MathHelper.getInt(worldIn.rand, 1, 3);
-    }
-
+	@Override
+	protected int getBonemealAgeIncrease(World world) {
+		return MathHelper.nextInt(world.rand, 1, 3);
+	}
 }
