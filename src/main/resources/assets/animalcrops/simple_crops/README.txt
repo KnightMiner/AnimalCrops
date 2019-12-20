@@ -1,0 +1,1 @@
+The files in this folder are used for the internal "Simple Crops Pack" resource pack. They do not need to be included for resource packs.
