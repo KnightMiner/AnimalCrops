@@ -13,8 +13,8 @@ public class RenderAnimalCrops extends TileEntityRenderer<TileAnimalCrops> {
 
   @Override
   public void render(TileAnimalCrops te, double x, double y, double z, float partialTicks, int destroyStage) {
-    // if the simple pack is loaded, skip the TESR logic
-    if (SimpleCropPack.isLoaded()) {
+    // check with the settings file to determine if this block renders its TE
+    if (!Settings.shouldRenderEntity(te.getBlockState().getBlock())) {
       return;
     }
     int age = te.getBlockState().get(CropsBlock.AGE);

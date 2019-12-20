@@ -2,7 +2,6 @@ package knightminer.animalcrops.client;
 
 import com.google.common.collect.ImmutableSet;
 import knightminer.animalcrops.AnimalCrops;
-import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourcePack;
 import net.minecraft.resources.ResourcePackFileNotFoundException;
 import net.minecraft.resources.ResourcePackInfo;
@@ -79,11 +78,7 @@ public class SimpleCropPack extends ResourcePack {
   }
 
   @Override
-  public void close() throws IOException {
-    // this function is called during game load and when the resource pack menu is opened and closed
-    // so invalidate the loaded cache so we know whether to continue using the TESR
-    isLoaded = null;
-  }
+  public void close() throws IOException {}
 
   /**
    * Gets the resource path for a given resource
@@ -112,20 +107,5 @@ public class SimpleCropPack extends ResourcePack {
    */
   public static <T extends ResourcePackInfo> void packFinder(Map<String,T> map, ResourcePackInfo.IFactory<T> factory) {
     map.put(PACK_NAME, ResourcePackInfo.createResourcePack(PACK_NAME, false, ()->INSTANCE, factory, ResourcePackInfo.Priority.TOP));
-  }
-
-  /** Cached state of the pack to check if it is loaded */
-  private static Boolean isLoaded = null;
-
-  /**
-   * Checks if the simple crop pack is loaded, caching the result
-   * @return  True if the pack is loaded, false otherwise
-   */
-  public static boolean isLoaded() {
-    if (isLoaded == null) {
-      isLoaded = Minecraft.getInstance().gameSettings.resourcePacks.contains(PACK_NAME);
-    }
-
-    return isLoaded;
   }
 }

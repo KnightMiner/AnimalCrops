@@ -7,6 +7,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.SpawnEggItem;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.resources.IReloadableResourceManager;
+import net.minecraft.resources.IResourceManager;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -19,6 +21,11 @@ public class ClientEvents {
 	public ClientEvents() {
 		FMLJavaModLoadingContext.get().getModEventBus().register(this);
 		Minecraft.getInstance().getResourcePackList().addPackFinder(SimpleCropPack::packFinder);
+
+		IResourceManager manager = Minecraft.getInstance().getResourceManager();
+		if (manager instanceof IReloadableResourceManager) {
+			((IReloadableResourceManager)manager).addReloadListener(Settings.INSTANCE);
+		}
 	}
 
 	@SubscribeEvent
