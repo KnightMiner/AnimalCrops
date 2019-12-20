@@ -8,8 +8,6 @@ import knightminer.animalcrops.tileentity.TileAnimalCrops;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CropsBlock;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.material.Material;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -25,12 +23,8 @@ import java.util.Random;
 
 public class BlockAnimalCrops extends CropsBlock {
 
-	public BlockAnimalCrops() {
-		super(Properties.create(Material.PLANTS)
-										.doesNotBlockMovement()
-										.tickRandomly()
-										.hardnessAndResistance(0)
-										.sound(SoundType.CROP));
+	public BlockAnimalCrops(Properties props) {
+		super(props);
 	}
 
 	/* Crop properties */

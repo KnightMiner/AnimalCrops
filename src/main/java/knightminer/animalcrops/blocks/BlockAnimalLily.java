@@ -18,6 +18,10 @@ public class BlockAnimalLily extends BlockAnimalCrops {
 
   protected static final VoxelShape LILY_PAD_AABB = makeCuboidShape(1, 0, 1, 15, 1, 15);
 
+  public BlockAnimalLily(Properties props) {
+    super(props);
+  }
+
   /* Block properties */
 
   @Override

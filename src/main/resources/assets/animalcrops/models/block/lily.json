@@ -1,7 +1,16 @@
 {
-  "parent": "block/lily_pad",
   "textures": {
     "particle": "#lily",
     "texture": "#lily"
-  }
+  },
+  "elements": [
+    {
+      "from": [ 0, 0.25, 0 ],
+      "to": [ 16, 0.25, 16 ],
+      "faces": {
+        "down": { "texture": "#lily" },
+        "up":   { "texture": "#lily" }
+      }
+    }
+  ]
 }

@@ -7,6 +7,8 @@ import knightminer.animalcrops.items.ItemAnimalLily;
 import knightminer.animalcrops.items.ItemAnimalSeeds;
 import knightminer.animalcrops.tileentity.TileAnimalCrops;
 import net.minecraft.block.Block;
+import net.minecraft.block.SoundType;
+import net.minecraft.block.material.Material;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
@@ -41,8 +43,10 @@ public class Registration {
   public static void registerBlocks(RegistryEvent.Register<Block> event) {
     IForgeRegistry<Block> r = event.getRegistry();
 
-    register(r, new BlockAnimalCrops(), "crops");
-    register(r, new BlockAnimalLily(), "lily");
+    Block.Properties props = Block.Properties.create(Material.PLANTS).tickRandomly().hardnessAndResistance(0).sound(SoundType.CROP);
+    register(r, new BlockAnimalLily(props), "lily");
+    props.doesNotBlockMovement();
+    register(r, new BlockAnimalCrops(props), "crops");
 
     //if(Config.animalBush.get()) {
     //  register(r, new BlockAnimalBush(), "bush");
