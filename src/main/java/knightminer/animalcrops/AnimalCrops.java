@@ -8,7 +8,6 @@ import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -18,12 +17,10 @@ public class AnimalCrops {
 	public static final Logger log = LogManager.getLogger(modID);
 
 	public AnimalCrops() {
-		DistExecutor.callWhenOn(Dist.CLIENT, ()->()->new ClientEvents());
+		DistExecutor.callWhenOn(Dist.CLIENT, ()->ClientEvents::new);
 		Utils.initReflection();
 
-		ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, Config.SERVER_SPEC);
-		ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, Config.CLIENT_SPEC);
-		FMLJavaModLoadingContext.get().getModEventBus().addListener(Config::configChanged);
+		ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, Config.SPEC);
 	}
 
 //	TODO: will probably ditch the animal bush entirely

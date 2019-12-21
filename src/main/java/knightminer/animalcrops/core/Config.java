@@ -9,16 +9,15 @@ import net.minecraftforge.common.ForgeConfigSpec.BooleanValue;
 import net.minecraftforge.common.ForgeConfigSpec.Builder;
 import net.minecraftforge.common.ForgeConfigSpec.ConfigValue;
 import net.minecraftforge.common.ForgeConfigSpec.IntValue;
-import net.minecraftforge.fml.config.ModConfig;
 
 import java.util.List;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 public class Config {
 
-	public static final Builder SERVER_BUILDER;
-	public static final ForgeConfigSpec SERVER_SPEC;
-	public static final Builder CLIENT_BUILDER;
-	public static final ForgeConfigSpec CLIENT_SPEC;
+	private static final Builder BUILDER;
+	public static final ForgeConfigSpec SPEC;
 
 	public static ConfigValue<List<? extends String>> animalCrops;
 	private static final List<String> ANIMAL_CROP_DEFAULTS = ImmutableList.of(
@@ -52,35 +51,32 @@ public class Config {
 
 	// crop
 	public static BooleanValue canBonemeal;
-	public static BooleanValue fancyCropRendering;
+	public static BooleanValue simpleCropRendering;
 	// bush
 	public static BooleanValue animalBush;
 	public static IntValue animalBushChance;
 
 	static {
-		SERVER_BUILDER = new Builder();
-		CLIENT_BUILDER = new Builder();
-		configure(SERVER_BUILDER, CLIENT_BUILDER);
-		SERVER_SPEC = SERVER_BUILDER.build();
-		CLIENT_SPEC = CLIENT_BUILDER.build();
+		BUILDER = new Builder();
+		configure(BUILDER);
+		SPEC = BUILDER.build();
 	}
 
-
-	private static void configure(Builder server, Builder client) {
+	private static void configure(Builder builder) {
 		// crop
-		server.push("crop");
+		builder.push("crop");
 		{
-			canBonemeal = server
+			canBonemeal = builder
 					.comment("Determines if bonemeal can be applied to the animal crop")
 					.define("bonemeal", false);
-			animalCrops = server
+			animalCrops = builder
 					.comment("List of animals to add as animal seeds. Must extend MobEntity and have a spawn egg.")
-					.defineList("animalCrops", ANIMAL_CROP_DEFAULTS, Config::validateAnimal);
-			animalLilies = server
+					.defineList("animalCrops", validateDefaults(ANIMAL_CROP_DEFAULTS), Config::validateAnimal);
+			animalLilies = builder
 					.comment("List of water animals to add as animal lilies. Must extend MobEntity and have a spawn egg.")
-					.defineList("animalLilies", ANIMAL_LILY_DEFAULTS, Config::validateAnimal);
+					.defineList("animalLilies", validateDefaults(ANIMAL_LILY_DEFAULTS), Config::validateAnimal);
 		}
-		server.pop();
+		builder.pop();
 
 		// bush
 //		server.push("bush");
@@ -93,19 +89,15 @@ public class Config {
 //					.defineInRange("chance", 2, 0, 500);
 //		}
 //		server.pop();
-
-		// client
-		fancyCropRendering = client
-				.comment("Makes the animal crop render the entity model. If false will just render a tinted texture based on the spawn egg colors")
-				.define("fancyCropRendering", true);
 	}
 
-	public static void configChanged(final ModConfig.ModConfigEvent configEvent) {
-//
-//		// validate animal lists and process into resource locations
-//		animals = processAnimals(animalDefaults);
-//		seaAnimals = processAnimals(seaAnimalDefaults);
-
+	/**
+	 * Creates a callback giving default list items
+	 * @param defaults  Default defaults, may contain mobs from unloaded mods
+	 * @return Validated defaults
+	 */
+	private static Supplier<List<? extends String>> validateDefaults(List<String> defaults) {
+		return () -> defaults.stream().filter(Config::validateAnimal).collect(Collectors.toList());
 	}
 
 	/**
