@@ -3,8 +3,8 @@ package knightminer.animalcrops.blocks;
 import knightminer.animalcrops.core.Config;
 import knightminer.animalcrops.core.Registration;
 import knightminer.animalcrops.core.Utils;
-import knightminer.animalcrops.items.ItemAnimalSeeds;
-import knightminer.animalcrops.tileentity.TileAnimalCrops;
+import knightminer.animalcrops.items.AnimalSeedsItem;
+import knightminer.animalcrops.tileentity.AnimalCropsTileEntity;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CropsBlock;
@@ -21,9 +21,9 @@ import net.minecraft.world.World;
 import javax.annotation.Nonnull;
 import java.util.Random;
 
-public class BlockAnimalCrops extends CropsBlock {
+public class AnimalCropsBlock extends CropsBlock {
 
-	public BlockAnimalCrops(Properties props) {
+	public AnimalCropsBlock(Properties props) {
 		super(props);
 	}
 
@@ -38,7 +38,7 @@ public class BlockAnimalCrops extends CropsBlock {
 	 * Gets the seed item for this crop
 	 * @return  Item for this crop
 	 */
-	protected ItemAnimalSeeds getSeed() {
+	protected AnimalSeedsItem getSeed() {
 		return Registration.seeds;
 	}
 
@@ -53,15 +53,15 @@ public class BlockAnimalCrops extends CropsBlock {
 	@Nonnull
 	@Override
 	public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-		return new TileAnimalCrops();
+		return new AnimalCropsTileEntity();
 	}
 
 	@Override
 	public void onBlockPlacedBy(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
 		// set the crop's entity
 		TileEntity te = world.getTileEntity(pos);
-		if(te instanceof TileAnimalCrops) {
-			Utils.getEntityID(stack.getTag()).ifPresent((id) -> ((TileAnimalCrops)te).setEntity(id));
+		if(te instanceof AnimalCropsTileEntity) {
+			Utils.getEntityID(stack.getTag()).ifPresent((id) -> ((AnimalCropsTileEntity)te).setEntity(id));
 		}
 	}
 
@@ -72,9 +72,9 @@ public class BlockAnimalCrops extends CropsBlock {
 		if(state.getBlock() != newState.getBlock()) {
 			// assuming we have the tile entity to use
 			TileEntity te = world.getTileEntity(pos);
-			if(te instanceof TileAnimalCrops) {
+			if(te instanceof AnimalCropsTileEntity) {
 				if(getAge(state) >= getMaxAge()) {
-					((TileAnimalCrops)te).spawnAnimal();
+					((AnimalCropsTileEntity)te).spawnAnimal();
 				}
 			}
 
@@ -83,8 +83,8 @@ public class BlockAnimalCrops extends CropsBlock {
 			// for right click harvest
 		} else if(state.getBlock() == this && getAge(state) >= getMaxAge() && getAge(newState) < getMaxAge()) {
 			TileEntity te = world.getTileEntity(pos);
-			if(te instanceof TileAnimalCrops) {
-				((TileAnimalCrops)te).spawnAnimal();
+			if(te instanceof AnimalCropsTileEntity) {
+				((AnimalCropsTileEntity)te).spawnAnimal();
 			}
 		}
 	}

@@ -2,17 +2,17 @@ package knightminer.animalcrops.client;
 
 import com.mojang.blaze3d.platform.GLX;
 import com.mojang.blaze3d.platform.GlStateManager;
-import knightminer.animalcrops.tileentity.TileAnimalCrops;
+import knightminer.animalcrops.tileentity.AnimalCropsTileEntity;
 import net.minecraft.block.CropsBlock;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.entity.MobEntity;
 
-public class RenderAnimalCrops extends TileEntityRenderer<TileAnimalCrops> {
+public class RenderAnimalCrops extends TileEntityRenderer<AnimalCropsTileEntity> {
   private static final Minecraft mc = Minecraft.getInstance();
 
   @Override
-  public void render(TileAnimalCrops te, double x, double y, double z, float partialTicks, int destroyStage) {
+  public void render(AnimalCropsTileEntity te, double x, double y, double z, float partialTicks, int destroyStage) {
     // check with the settings file to determine if this block renders its TE
     if (!Settings.shouldRenderEntity(te.getBlockState().getBlock())) {
       return;

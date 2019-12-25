@@ -18,7 +18,7 @@ import net.minecraft.util.math.BlockPos;
 
 import javax.annotation.Nonnull;
 
-public class TileAnimalCrops extends TileEntity {
+public class AnimalCropsTileEntity extends TileEntity {
 	/** Tag to use to store the random direction */
 	public static final String TAG_DIRECTION = "direction";
 
@@ -28,7 +28,7 @@ public class TileAnimalCrops extends TileEntity {
 	 * */
 	private MobEntity entity;
 
-	public TileAnimalCrops() {
+	public AnimalCropsTileEntity() {
 		super(Registration.cropsTE);
 	}
 
@@ -67,7 +67,7 @@ public class TileAnimalCrops extends TileEntity {
 
 		// create the entity from the tile data
 		Entity created = Utils.getEntityID(this.getTileData())
-													.filter(TileAnimalCrops::entityValid)
+													.filter(AnimalCropsTileEntity::entityValid)
 													.flatMap(EntityType::byKey)
 													.map((type) -> type.create(world))
 													.orElse(null);

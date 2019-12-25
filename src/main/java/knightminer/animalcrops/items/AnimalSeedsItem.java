@@ -12,9 +12,9 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 
-public class ItemAnimalSeeds extends BlockItem {
+public class AnimalSeedsItem extends BlockItem {
 
-	public ItemAnimalSeeds(Block crops, Properties props) {
+	public AnimalSeedsItem(Block crops, Properties props) {
 		super(crops, props);
 	}
 

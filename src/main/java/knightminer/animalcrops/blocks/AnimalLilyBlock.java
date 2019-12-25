@@ -1,7 +1,7 @@
 package knightminer.animalcrops.blocks;
 
 import knightminer.animalcrops.core.Registration;
-import knightminer.animalcrops.items.ItemAnimalSeeds;
+import knightminer.animalcrops.items.AnimalSeedsItem;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.BoatEntity;
@@ -14,18 +14,18 @@ import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.common.PlantType;
 
-public class BlockAnimalLily extends BlockAnimalCrops {
+public class AnimalLilyBlock extends AnimalCropsBlock {
 
   protected static final VoxelShape LILY_PAD_AABB = makeCuboidShape(1, 0, 1, 15, 1, 15);
 
-  public BlockAnimalLily(Properties props) {
+  public AnimalLilyBlock(Properties props) {
     super(props);
   }
 
   /* Block properties */
 
   @Override
-  protected ItemAnimalSeeds getSeed() {
+  protected AnimalSeedsItem getSeed() {
     return Registration.lilySeeds;
   }
 

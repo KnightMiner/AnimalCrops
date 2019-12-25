@@ -28,9 +28,9 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.BlockSnapshot;
 import net.minecraftforge.event.ForgeEventFactory;
 
-public class ItemAnimalLily extends ItemAnimalSeeds {
+public class AnimalLilyItem extends AnimalSeedsItem {
 
-	public ItemAnimalLily(Block crops, Properties props) {
+	public AnimalLilyItem(Block crops, Properties props) {
 		super(crops, props);
 	}
 

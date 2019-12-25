@@ -2,7 +2,7 @@ package knightminer.animalcrops.client;
 
 import knightminer.animalcrops.core.Registration;
 import knightminer.animalcrops.core.Utils;
-import knightminer.animalcrops.tileentity.TileAnimalCrops;
+import knightminer.animalcrops.tileentity.AnimalCropsTileEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.SpawnEggItem;
@@ -31,7 +31,7 @@ public class ClientEvents {
 	@SubscribeEvent
 	public void registerTER(FMLClientSetupEvent event) {
 		// this is bound unconditionally, but no-ops if the pack is disabled
-		ClientRegistry.bindTileEntitySpecialRenderer(TileAnimalCrops.class, new RenderAnimalCrops());
+		ClientRegistry.bindTileEntitySpecialRenderer(AnimalCropsTileEntity.class, new RenderAnimalCrops());
 	}
 
 	@SubscribeEvent
@@ -43,7 +43,7 @@ public class ClientEvents {
 				return -1;
 			}
 			TileEntity te = world.getTileEntity(pos);
-			if(te instanceof TileAnimalCrops) {
+			if(te instanceof AnimalCropsTileEntity) {
 				return getEggColor(te.getTileData(), index);
 			}
 			return -1;

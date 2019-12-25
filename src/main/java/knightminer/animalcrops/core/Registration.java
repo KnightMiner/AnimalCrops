@@ -1,11 +1,11 @@
 package knightminer.animalcrops.core;
 
 import knightminer.animalcrops.AnimalCrops;
-import knightminer.animalcrops.blocks.BlockAnimalCrops;
-import knightminer.animalcrops.blocks.BlockAnimalLily;
-import knightminer.animalcrops.items.ItemAnimalLily;
-import knightminer.animalcrops.items.ItemAnimalSeeds;
-import knightminer.animalcrops.tileentity.TileAnimalCrops;
+import knightminer.animalcrops.blocks.AnimalCropsBlock;
+import knightminer.animalcrops.blocks.AnimalLilyBlock;
+import knightminer.animalcrops.items.AnimalLilyItem;
+import knightminer.animalcrops.items.AnimalSeedsItem;
+import knightminer.animalcrops.tileentity.AnimalCropsTileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
@@ -29,27 +29,27 @@ import javax.annotation.Nonnull;
 @EventBusSubscriber(modid = AnimalCrops.modID, bus = Bus.MOD)
 public class Registration {
   public static final Block crops = injected(), lily = injected();
-  public static final ItemAnimalSeeds seeds = injected();
+  public static final AnimalSeedsItem seeds = injected();
   @ObjectHolder("lily")
-  public static final ItemAnimalSeeds lilySeeds = injected();
+  public static final AnimalSeedsItem lilySeeds = injected();
   @ObjectHolder("crops")
-  public static final TileEntityType<TileAnimalCrops> cropsTE = injected();
+  public static final TileEntityType<AnimalCropsTileEntity> cropsTE = injected();
 
   @SubscribeEvent
   public static void registerBlocks(RegistryEvent.Register<Block> event) {
     IForgeRegistry<Block> r = event.getRegistry();
 
     Block.Properties props = Block.Properties.create(Material.PLANTS).tickRandomly().hardnessAndResistance(0).sound(SoundType.CROP);
-    register(r, new BlockAnimalLily(props), "lily");
+    register(r, new AnimalLilyBlock(props), "lily");
     props.doesNotBlockMovement();
-    register(r, new BlockAnimalCrops(props), "crops");
+    register(r, new AnimalCropsBlock(props), "crops");
   }
 
   @SubscribeEvent
   public static void registerTE(RegistryEvent.Register<TileEntityType<?>> event) {
     IForgeRegistry<TileEntityType<?>> r = event.getRegistry();
 
-    register(r, TileEntityType.Builder.create(TileAnimalCrops::new, crops, lily).build(null), "crops");
+    register(r, TileEntityType.Builder.create(AnimalCropsTileEntity::new, crops, lily).build(null), "crops");
   }
 
   @SubscribeEvent
@@ -57,8 +57,8 @@ public class Registration {
     IForgeRegistry<Item> r = event.getRegistry();
     Item.Properties props = (new Item.Properties()).group(ItemGroup.MATERIALS);
 
-    register(r, new ItemAnimalSeeds(crops, props), "seeds");
-    register(r, new ItemAnimalLily(lily, props), "lily");
+    register(r, new AnimalSeedsItem(crops, props), "seeds");
+    register(r, new AnimalLilyItem(lily, props), "lily");
   }
 
   // anything with no register event
