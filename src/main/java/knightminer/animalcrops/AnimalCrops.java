@@ -22,16 +22,4 @@ public class AnimalCrops {
 
 		ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, Config.SPEC);
 	}
-
-//	TODO: will probably ditch the animal bush entirely
-//	@EventHandler
-//	public void init(FMLInitializationEvent event) {
-//		Config.init(event);
-//
-//		if(Config.animalBush && Config.animalBushChance > 0) {
-//			GameRegistry.registerWorldGenerator(new WorldGenAnimalCrops(), 25);
-//		}
-//
-//		proxy.init();
-//	}
 }

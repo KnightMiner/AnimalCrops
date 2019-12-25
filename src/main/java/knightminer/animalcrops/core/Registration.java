@@ -9,7 +9,6 @@ import knightminer.animalcrops.tileentity.TileAnimalCrops;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
-import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.tileentity.TileEntityType;
@@ -30,12 +29,9 @@ import javax.annotation.Nonnull;
 @EventBusSubscriber(modid = AnimalCrops.modID, bus = Bus.MOD)
 public class Registration {
   public static final Block crops = injected(), lily = injected();
-  public static final Block bush = injected();
   public static final ItemAnimalSeeds seeds = injected();
   @ObjectHolder("lily")
   public static final ItemAnimalSeeds lilySeeds = injected();
-  @ObjectHolder("bush")
-  public static final BlockItem itemBush = injected();
   @ObjectHolder("crops")
   public static final TileEntityType<TileAnimalCrops> cropsTE = injected();
 
@@ -47,10 +43,6 @@ public class Registration {
     register(r, new BlockAnimalLily(props), "lily");
     props.doesNotBlockMovement();
     register(r, new BlockAnimalCrops(props), "crops");
-
-    //if(Config.animalBush.get()) {
-    //  register(r, new BlockAnimalBush(), "bush");
-    //}
   }
 
   @SubscribeEvent
@@ -67,10 +59,6 @@ public class Registration {
 
     register(r, new ItemAnimalSeeds(crops, props), "seeds");
     register(r, new ItemAnimalLily(lily, props), "lily");
-
-//    if(Config.animalBush.get()) {
-//      register(r, new BlockItem(bush, props), "bush");
-//    }
   }
 
   // anything with no register event

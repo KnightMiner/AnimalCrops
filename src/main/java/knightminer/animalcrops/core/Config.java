@@ -8,7 +8,6 @@ import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.ForgeConfigSpec.BooleanValue;
 import net.minecraftforge.common.ForgeConfigSpec.Builder;
 import net.minecraftforge.common.ForgeConfigSpec.ConfigValue;
-import net.minecraftforge.common.ForgeConfigSpec.IntValue;
 
 import java.util.List;
 import java.util.function.Supplier;
@@ -19,6 +18,7 @@ public class Config {
 	private static final Builder BUILDER;
 	public static final ForgeConfigSpec SPEC;
 
+	// crop
 	public static ConfigValue<List<? extends String>> animalCrops;
 	private static final List<String> ANIMAL_CROP_DEFAULTS = ImmutableList.of(
 			"minecraft:cat",
@@ -48,13 +48,7 @@ public class Config {
 			"minecraft:squid",
 			"minecraft:tropical_fish",
 			"minecraft:turtle");
-
-	// crop
 	public static BooleanValue canBonemeal;
-	public static BooleanValue simpleCropRendering;
-	// bush
-	public static BooleanValue animalBush;
-	public static IntValue animalBushChance;
 
 	static {
 		BUILDER = new Builder();
@@ -77,18 +71,6 @@ public class Config {
 					.defineList("animalLilies", validateDefaults(ANIMAL_LILY_DEFAULTS), Config::validateAnimal);
 		}
 		builder.pop();
-
-		// bush
-//		server.push("bush");
-//		{
-//			animalBush = server
-//					.comment("Adds the animal bush: a block that when broken drops a random animal seed.")
-//					.define("enable", true);
-//			animalBushChance = server
-//					.comment("Chance for an animal bush to generate per chunk. Formula is a 1 in <chance> chance of generating. Set to 0 to disable generation.")
-//					.defineInRange("chance", 2, 0, 500);
-//		}
-//		server.pop();
 	}
 
 	/**
