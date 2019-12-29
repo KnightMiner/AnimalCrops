@@ -40,14 +40,14 @@ public class RenderAnimalCrops extends TileEntityRenderer<AnimalCropsTileEntity>
     // its pretty easy, just draw the entity
     stack.func_227860_a_(); // push matrix
     stack.func_227861_a_(0.5, 0, 0.5); // translate
-    // TODO: tint entity green
+    // TODO: tint entity green, is this still possible?
     // GlStateManager.color4f(0.65f, 1.0f, 0.65f, 1.0f);
     if(age < 7) {
       float scale = age / 7f;
       stack.func_227862_a_(scale, scale, scale); // scale
     }
     // renderEntity(entity, x, y, z, rotation, delta, stack, buffer, lighting)
-    mc.getRenderManager().func_229084_a_(entity, 0, 0, 0, 0, delta, stack, buffer, lighting);
+    mc.getRenderManager().func_229084_a_(entity, 0, 0, 0, 0, 0, stack, buffer, lighting);
     //GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
     stack.func_227865_b_(); // pop matrix
   }
