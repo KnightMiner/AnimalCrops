@@ -4,6 +4,9 @@ import knightminer.animalcrops.core.Registration;
 import knightminer.animalcrops.core.Utils;
 import knightminer.animalcrops.tileentity.AnimalCropsTileEntity;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderTypeLookup;
+import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.SpawnEggItem;
 import net.minecraft.nbt.CompoundNBT;
@@ -31,7 +34,12 @@ public class ClientEvents {
 	@SubscribeEvent
 	public void registerTER(FMLClientSetupEvent event) {
 		// this is bound unconditionally, but no-ops if the pack is disabled
-		ClientRegistry.bindTileEntitySpecialRenderer(AnimalCropsTileEntity.class, new RenderAnimalCrops());
+		ClientRegistry.bindTileEntityRenderer(Registration.cropsTE, new RenderAnimalCrops(TileEntityRendererDispatcher.instance));
+
+		// set render types to cutout
+		RenderType cutout = RenderType.func_228643_e_();
+		RenderTypeLookup.setRenderLayer(Registration.crops, cutout);
+		RenderTypeLookup.setRenderLayer(Registration.lily, cutout);
 	}
 
 	@SubscribeEvent

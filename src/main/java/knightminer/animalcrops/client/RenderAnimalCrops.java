@@ -1,20 +1,30 @@
 package knightminer.animalcrops.client;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GLX;
 import com.mojang.blaze3d.platform.GlStateManager;
 import knightminer.animalcrops.tileentity.AnimalCropsTileEntity;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.CropsBlock;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.Quaternion;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
+import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.entity.MobEntity;
 
 public class RenderAnimalCrops extends TileEntityRenderer<AnimalCropsTileEntity> {
   private static final Minecraft mc = Minecraft.getInstance();
 
+  public RenderAnimalCrops(TileEntityRendererDispatcher dispatcher) {
+    super(dispatcher);
+  }
+
   @Override
-  public void render(AnimalCropsTileEntity te, double x, double y, double z, float partialTicks, int destroyStage) {
+  public void func_225616_a_(AnimalCropsTileEntity te, float delta, MatrixStack stack, IRenderTypeBuffer buffer, int lighting, int var6) {
     // check with the settings file to determine if this block renders its TE
-    if (!Settings.shouldRenderEntity(te.getBlockState().getBlock())) {
+    if(!Settings.shouldRenderEntity(te.getBlockState().getBlock())) {
       return;
     }
     int age = te.getBlockState().get(CropsBlock.AGE);
@@ -28,21 +38,17 @@ public class RenderAnimalCrops extends TileEntityRenderer<AnimalCropsTileEntity>
     }
 
     // its pretty easy, just draw the entity
-    GlStateManager.pushMatrix();
-    int brightness = mc.world.getCombinedLight(te.getPos(), 0);
-    int j = brightness & 0xFFFF;
-    int k = brightness >> 0x10 & 0xFFFF;
-    //OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, j, k);
-    GLX.glMultiTexCoord2f(GLX.GL_TEXTURE1, j, k);
-    GlStateManager.color4f(0.65f, 1.0f, 0.65f, 1.0f);
-    GlStateManager.translatef((float)x + 0.5f, (float)y, (float)z + 0.5f);
+    stack.func_227860_a_(); // push matrix
+    stack.func_227861_a_(0.5, 0, 0.5); // translate
+    // TODO: tint entity green
+    // GlStateManager.color4f(0.65f, 1.0f, 0.65f, 1.0f);
     if(age < 7) {
       float scale = age / 7f;
-      GlStateManager.enableRescaleNormal();
-      GlStateManager.scalef(scale, scale, scale);
+      stack.func_227862_a_(scale, scale, scale); // scale
     }
-    mc.getRenderManager().renderEntity(entity, 0, 0, 0, entity.rotationYaw, 0, false);
-    GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-    GlStateManager.popMatrix();
+    // renderEntity(entity, x, y, z, rotation, delta, stack, buffer, lighting)
+    mc.getRenderManager().func_229084_a_(entity, 0, 0, 0, 0, delta, stack, buffer, lighting);
+    //GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+    stack.func_227865_b_(); // pop matrix
   }
 }

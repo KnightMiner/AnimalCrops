@@ -1,18 +1,12 @@
 {
-  "forge_marker": 1,
-  "defaults": {
-    "model": "block/cross"
-  },
   "variants": {
-    "age": {
-      "0": { "textures": { "cross": "animalcrops:block/crops_0" }},
-      "1": { "textures": { "cross": "animalcrops:block/crops_1" }},
-      "2": { "textures": { "cross": "animalcrops:block/crops_2" }},
-      "3": { "textures": { "cross": "animalcrops:block/crops_3" }},
-      "4": { "textures": { "cross": "animalcrops:block/crops_4" }},
-      "5": { "textures": { "cross": "animalcrops:block/crops_5" }},
-      "6": { "textures": { "cross": "animalcrops:block/crops_6" }},
-      "7": { "textures": { "cross": "animalcrops:block/crops_7" }}
-    }
+    "age=0": { "model": "animalcrops:block/crops/0" },
+    "age=1": { "model": "animalcrops:block/crops/1" },
+    "age=2": { "model": "animalcrops:block/crops/2" },
+    "age=3": { "model": "animalcrops:block/crops/3" },
+    "age=4": { "model": "animalcrops:block/crops/4" },
+    "age=5": { "model": "animalcrops:block/crops/5" },
+    "age=6": { "model": "animalcrops:block/crops/6" },
+    "age=7": { "model": "animalcrops:block/crops/7" }
   }
 }
