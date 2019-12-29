@@ -21,6 +21,7 @@ public class Config {
 	// crop
 	public static ConfigValue<List<? extends String>> animalCrops;
 	private static final List<String> ANIMAL_CROP_DEFAULTS = ImmutableList.of(
+			"minecraft:bee",
 			"minecraft:cat",
 			"minecraft:chicken",
 			"minecraft:cow",
