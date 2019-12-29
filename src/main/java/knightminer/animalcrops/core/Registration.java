@@ -7,6 +7,7 @@ import knightminer.animalcrops.items.AnimalLilyItem;
 import knightminer.animalcrops.items.AnimalSeedsItem;
 import knightminer.animalcrops.tileentity.AnimalCropsTileEntity;
 import net.minecraft.block.Block;
+import net.minecraft.block.ComposterBlock;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.item.Item;
@@ -65,6 +66,8 @@ public class Registration {
   @SubscribeEvent
   public static void registerMisc(FMLCommonSetupEvent event) {
     LootFunctionManager.registerFunction(new SetAnimalLootFunction.Serializer(new ResourceLocation(AnimalCrops.modID, "set_animal")));
+    ComposterBlock.registerCompostable(0.5f, seeds);
+    ComposterBlock.registerCompostable(0.5f, lilySeeds);
   }
 
 
