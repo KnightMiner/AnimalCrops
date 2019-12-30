@@ -115,7 +115,7 @@ public class Config {
 			pollenAction = builder
 					.comment("If CONSUME, the entity is killed when pollen are used, though no items are dropped",
 					         "If DAMAGE, the entity will take 2 hearts of damage when pollen are used")
-					.defineEnum("action", AnimalPollenItem.Action.CONSUME);
+					.defineEnum("action", AnimalPollenItem.Action.DAMAGE);
 			pollenBlacklist = builder
 					.comment("Animals that pollen cannot be used on, from either animal crops or animal lilies")
 					.defineList("blacklist", ImmutableList.of(), Config::validateAnimal);
