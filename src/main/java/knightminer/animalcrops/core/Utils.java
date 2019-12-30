@@ -3,6 +3,7 @@ package knightminer.animalcrops.core;
 import knightminer.animalcrops.AnimalCrops;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.monster.SlimeEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.SpawnEggItem;
 import net.minecraft.nbt.CompoundNBT;
@@ -60,6 +61,27 @@ public abstract class Utils {
    */
   public static SpawnEggItem getEgg(EntityType<?> type) {
     return SpawnEggItem.EGGS.get(type);
+  }
+
+  /**
+   * Fills a stack of containers, shrinking it by 1
+   * @param player     Player to give the item to and for creative checks
+   * @param container  Container stack, may contain more than 1
+   * @param filled     Filled container stack
+   * @return  Filled stack if 1 container, leftover container if more than 1, dropping the filled
+   */
+  public static ItemStack fillContainer(PlayerEntity player, ItemStack container, ItemStack filled) {
+    container = container.copy();
+    if (!player.isCreative()) {
+      container.shrink(1);
+      if (container.isEmpty()) {
+        return filled;
+      }
+    }
+    if (!player.inventory.addItemStackToInventory(filled)) {
+      player.dropItem(filled, false);
+    }
+    return container;
   }
 
   /**

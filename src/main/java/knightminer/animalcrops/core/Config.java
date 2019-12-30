@@ -2,12 +2,14 @@ package knightminer.animalcrops.core;
 
 import com.google.common.collect.ImmutableList;
 import knightminer.animalcrops.AnimalCrops;
+import knightminer.animalcrops.items.AnimalPollenItem;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.SpawnEggItem;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.ForgeConfigSpec.BooleanValue;
 import net.minecraftforge.common.ForgeConfigSpec.Builder;
 import net.minecraftforge.common.ForgeConfigSpec.ConfigValue;
+import net.minecraftforge.common.ForgeConfigSpec.EnumValue;
 
 import java.util.List;
 import java.util.function.Supplier;
@@ -50,6 +52,11 @@ public class Config {
 			"minecraft:turtle");
 	public static BooleanValue canBonemeal;
 
+	// pollen
+	public static EnumValue<AnimalPollenItem.Action> pollenAction;
+	public static ConfigValue<List<? extends String>> pollenBlacklist;
+	private static final List<String> POLLEN_BLACKLIST_DEFAULTS = ImmutableList.of();
+
 	static {
 		BUILDER = new Builder();
 		configure(BUILDER);
@@ -69,6 +76,19 @@ public class Config {
 			animalLilies = builder
 					.comment("List of water animals to add as animal lilies. Must extend MobEntity and have a spawn egg.")
 					.defineList("animalLilies", validateDefaults(ANIMAL_LILY_DEFAULTS), Config::validateAnimal);
+		}
+		builder.pop();
+
+		// spores
+		builder.push("pollen");
+		{
+			pollenAction = builder
+					.comment("If CONSUME, the entity is killed when pollen are used, though no items are dropped",
+					         "If DAMAGE, the entity will take 2 hearts of damage when pollen are used")
+					.defineEnum("action", AnimalPollenItem.Action.CONSUME);
+			pollenBlacklist = builder
+					.comment("Animals that pollen cannot be used on, from either animal crops or animal lilies")
+					.defineList("blacklist", validateDefaults(POLLEN_BLACKLIST_DEFAULTS), Config::validateAnimal);
 		}
 		builder.pop();
 	}

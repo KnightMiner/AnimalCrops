@@ -4,6 +4,7 @@ import knightminer.animalcrops.AnimalCrops;
 import knightminer.animalcrops.blocks.AnimalCropsBlock;
 import knightminer.animalcrops.blocks.AnimalLilyBlock;
 import knightminer.animalcrops.items.AnimalLilyItem;
+import knightminer.animalcrops.items.AnimalPollenItem;
 import knightminer.animalcrops.items.AnimalSeedsItem;
 import knightminer.animalcrops.tileentity.AnimalCropsTileEntity;
 import net.minecraft.block.Block;
@@ -60,6 +61,7 @@ public class Registration {
 
     register(r, new AnimalSeedsItem(crops, props), "seeds");
     register(r, new AnimalLilyItem(lily, props), "lily");
+    register(r, new AnimalPollenItem(props), "pollen");
   }
 
   // anything with no register event
