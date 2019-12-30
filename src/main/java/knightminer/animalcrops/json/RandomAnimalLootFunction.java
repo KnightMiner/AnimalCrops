@@ -79,7 +79,7 @@ public class RandomAnimalLootFunction extends LootFunction {
 
   /* Setup prop list */
   static {
-    TYPES.put("crops", Config.animalCrops::get);
-    TYPES.put("lily", Config.animalLilies::get);
+    TYPES.put("crops", Config::randomAnimalCrops);
+    TYPES.put("lily", Config::randomAnimalLilies);
   }
 }
