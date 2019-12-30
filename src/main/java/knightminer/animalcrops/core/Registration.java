@@ -113,7 +113,7 @@ public class Registration {
    * @param name  Resource path
    * @return  Animal Crops resource location
    */
-  private static ResourceLocation getResource(String name) {
+  public static ResourceLocation getResource(String name) {
     return new ResourceLocation(AnimalCrops.modID, name);
   }
 
