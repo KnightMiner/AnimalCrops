@@ -6,8 +6,12 @@ import knightminer.animalcrops.blocks.AnimalLilyBlock;
 import knightminer.animalcrops.items.AnimalLilyItem;
 import knightminer.animalcrops.items.AnimalPollenItem;
 import knightminer.animalcrops.items.AnimalSeedsItem;
+import knightminer.animalcrops.json.ConfigCondition;
+import knightminer.animalcrops.json.RandomAnimalLootFunction;
+import knightminer.animalcrops.json.SetAnimalLootFunction;
 import knightminer.animalcrops.tileentity.AnimalCropsTileEntity;
 import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.ComposterBlock;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
@@ -15,7 +19,13 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.storage.loot.ConstantRange;
+import net.minecraft.world.storage.loot.LootPool;
+import net.minecraft.world.storage.loot.LootTable;
+import net.minecraft.world.storage.loot.TableLootEntry;
+import net.minecraft.world.storage.loot.conditions.LootConditionManager;
 import net.minecraft.world.storage.loot.functions.LootFunctionManager;
+import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
@@ -67,9 +77,22 @@ public class Registration {
   // anything with no register event
   @SubscribeEvent
   public static void registerMisc(FMLCommonSetupEvent event) {
-    LootFunctionManager.registerFunction(new SetAnimalLootFunction.Serializer(new ResourceLocation(AnimalCrops.modID, "set_animal")));
     ComposterBlock.registerCompostable(0.5f, seeds);
     ComposterBlock.registerCompostable(0.5f, lilySeeds);
+
+    LootFunctionManager.registerFunction(new SetAnimalLootFunction.Serializer(getResource("set_animal")));
+    LootFunctionManager.registerFunction(new RandomAnimalLootFunction.Serializer(getResource("random_animal")));
+    LootConditionManager.registerCondition(new ConfigCondition.Serializer(getResource("config")));
+  }
+
+  // registered to FORGE event bus in AnimalCrops
+  public static void injectLoot(LootTableLoadEvent event) {
+    addToBlockLoot(event, Blocks.GRASS);
+    addToBlockLoot(event, Blocks.TALL_GRASS);
+    addToBlockLoot(event, Blocks.FERN);
+    addToBlockLoot(event, Blocks.LARGE_FERN);
+    addToBlockLoot(event, Blocks.SEAGRASS);
+    addToBlockLoot(event, Blocks.TALL_SEAGRASS);
   }
 
 
@@ -86,6 +109,15 @@ public class Registration {
   }
 
   /**
+   * Gets a resource location in the animal crops domain
+   * @param name  Resource path
+   * @return  Animal Crops resource location
+   */
+  private static ResourceLocation getResource(String name) {
+    return new ResourceLocation(AnimalCrops.modID, name);
+  }
+
+  /**
    * Helper method to register an entry, setting the registry name
    * @param registry  Registry to use
    * @param value     Value to register
@@ -94,7 +126,24 @@ public class Registration {
    * @param <T>  Registry type
    */
   private static <V extends T, T extends IForgeRegistryEntry<T>> void register(IForgeRegistry<T> registry, V value, String name) {
-    value.setRegistryName(new ResourceLocation(AnimalCrops.modID, name));
+    value.setRegistryName(getResource(name));
     registry.register(value);
+  }
+
+  /**
+   * Injects an custom loot pool from animalcrops:blocks/minecraft/ into the vanilla block
+   * @param event  Event, used to determine if this is the proper loot table
+   * @param block  Block to inject loot into
+   */
+  private static void addToBlockLoot(LootTableLoadEvent event, Block block) {
+    String name = block.getRegistryName().getPath();
+    if (!event.getName().getNamespace().equals("minecraft") || !event.getName().getPath().equals("blocks/" + name)) {
+      return;
+    }
+    LootTable table = event.getTable();
+    if (table != LootTable.EMPTY_LOOT_TABLE) {
+      ResourceLocation location = getResource("blocks/minecraft/" + name);
+      table.addPool(new LootPool.Builder().name(location.toString()).rolls(ConstantRange.of(1)).addEntry(TableLootEntry.builder(location)).build());
+    }
   }
 }

@@ -57,6 +57,17 @@ public class Config {
 	public static ConfigValue<List<? extends String>> pollenBlacklist;
 	private static final List<String> POLLEN_BLACKLIST_DEFAULTS = ImmutableList.of();
 
+	// grass drops
+	private static BooleanValue dropAnimalSeeds;
+	public static boolean dropAnimalSeeds() {
+		return dropAnimalSeeds.get() && animalCrops.get().size() > 0;
+	}
+	private static BooleanValue dropAnimalLilies;
+	public static boolean dropAnimalLilies() {
+		return dropAnimalLilies.get() && animalLilies.get().size() > 0;
+	}
+	public static BooleanValue dropAnimalPollen;
+
 	static {
 		BUILDER = new Builder();
 		configure(BUILDER);
@@ -89,6 +100,21 @@ public class Config {
 			pollenBlacklist = builder
 					.comment("Animals that pollen cannot be used on, from either animal crops or animal lilies")
 					.defineList("blacklist", validateDefaults(POLLEN_BLACKLIST_DEFAULTS), Config::validateAnimal);
+		}
+		builder.pop();
+
+		// grass drops
+		builder.push("grassDrops");
+		{
+			dropAnimalSeeds = builder
+					.comment("If true, grass will rarely drop a random animal seed")
+					.define("animal_seeds", false);
+			dropAnimalLilies = builder
+					.comment("If true, sea grass will rarely drop a random animal lily")
+					.define("animal_lilies", false);
+			dropAnimalPollen = builder
+					.comment("If true, grass will rarely drop animal pollen")
+					.define("animal_pollen", true);
 		}
 		builder.pop();
 	}
