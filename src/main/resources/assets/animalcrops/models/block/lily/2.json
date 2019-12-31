@@ -1,0 +1,6 @@
+{
+  "parent": "animalcrops:block/lily/base",
+  "textures": {
+    "lily": "animalcrops:block/lily_2"
+  }
+}
