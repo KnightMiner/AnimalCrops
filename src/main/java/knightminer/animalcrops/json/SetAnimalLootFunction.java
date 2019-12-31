@@ -1,8 +1,9 @@
-package knightminer.animalcrops.core;
+package knightminer.animalcrops.json;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
+import knightminer.animalcrops.core.Utils;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;

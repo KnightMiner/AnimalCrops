@@ -1,0 +1,33 @@
+{
+  "type": "minecraft:block",
+  "pools": [{
+    "name": "animalcrops:extra_grass_drops",
+    "conditions": [
+      {
+        "condition": "animalcrops:config",
+        "prop": "lily"
+      },
+      { "condition": "minecraft:survives_explosion" },
+      {
+        "condition": "minecraft:inverted",
+        "term": {
+          "condition": "minecraft:match_tool",
+          "predicate": { "item": "minecraft:shears" }
+        }
+      },
+      {
+        "condition": "minecraft:random_chance",
+        "chance": 0.015
+      }
+    ],
+    "rolls": 1,
+    "entries": [{
+      "type": "minecraft:item",
+      "name": "animalcrops:lily"
+    }],
+    "functions": [{
+      "function": "animalcrops:random_animal",
+      "type": "lily"
+    }]
+  }]
+}

@@ -1,12 +1,12 @@
 package knightminer.animalcrops.blocks;
 
+import knightminer.animalcrops.AnimalCrops;
 import knightminer.animalcrops.core.Config;
 import knightminer.animalcrops.core.Registration;
 import knightminer.animalcrops.core.Utils;
 import knightminer.animalcrops.items.AnimalSeedsItem;
 import knightminer.animalcrops.tileentity.AnimalCropsTileEntity;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.block.CropsBlock;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -31,7 +31,7 @@ public class AnimalCropsBlock extends CropsBlock {
 
 	@Override
 	protected boolean isValidGround(BlockState state, IBlockReader worldIn, BlockPos pos) {
-		return state.getBlock() == Blocks.GRASS_BLOCK;
+		return state.isIn(AnimalCrops.CROP_SOIL);
 	}
 
 	/**

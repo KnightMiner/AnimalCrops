@@ -2,12 +2,15 @@ package knightminer.animalcrops.core;
 
 import com.google.common.collect.ImmutableList;
 import knightminer.animalcrops.AnimalCrops;
+import knightminer.animalcrops.items.AnimalPollenItem;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.SpawnEggItem;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.ForgeConfigSpec.BooleanValue;
 import net.minecraftforge.common.ForgeConfigSpec.Builder;
 import net.minecraftforge.common.ForgeConfigSpec.ConfigValue;
+import net.minecraftforge.common.ForgeConfigSpec.EnumValue;
+import net.minecraftforge.fml.config.ModConfig;
 
 import java.util.List;
 import java.util.function.Supplier;
@@ -51,6 +54,40 @@ public class Config {
 			"minecraft:turtle");
 	public static BooleanValue canBonemeal;
 
+	// pollen
+	public static EnumValue<AnimalPollenItem.Action> pollenAction;
+	public static ConfigValue<List<? extends String>> pollenBlacklist;
+
+	// grass drops
+	public static BooleanValue dropAnimalPollen;
+	private static ConfigValue<List<? extends String>> dropBlacklist;
+	// animal seeds
+	private static List<? extends String> randomAnimalCrops;
+	/** Returns the list of animal crops filtered by the drop blacklist */
+	public static List<? extends String> randomAnimalCrops() {
+		if (randomAnimalCrops != null) {
+			return randomAnimalCrops;
+		}
+		return randomAnimalCrops = handleDropBlacklist(animalCrops);
+	}
+	private static BooleanValue dropAnimalSeeds;
+	public static boolean dropAnimalSeeds() {
+		return dropAnimalSeeds.get() && !randomAnimalCrops().isEmpty();
+	}
+	// animal lilies
+	private static List<? extends String> randomAnimalLilies;
+	/** Returns the list of animal lilies filtered by the drop blacklist */
+	public static List<? extends String> randomAnimalLilies() {
+		if (randomAnimalLilies != null) {
+			return randomAnimalLilies;
+		}
+		return randomAnimalLilies = handleDropBlacklist(animalLilies);
+	}
+	private static BooleanValue dropAnimalLilies;
+	public static boolean dropAnimalLilies() {
+		return dropAnimalLilies.get() && !randomAnimalLilies().isEmpty();
+	}
+
 	static {
 		BUILDER = new Builder();
 		configure(BUILDER);
@@ -72,6 +109,45 @@ public class Config {
 					.defineList("animalLilies", validateDefaults(ANIMAL_LILY_DEFAULTS), Config::validateAnimal);
 		}
 		builder.pop();
+
+		// spores
+		builder.push("pollen");
+		{
+			pollenAction = builder
+					.comment("If CONSUME, the entity is killed when pollen are used, though no items are dropped",
+					         "If DAMAGE, the entity will take 2 hearts of damage when pollen are used")
+					.defineEnum("action", AnimalPollenItem.Action.DAMAGE);
+			pollenBlacklist = builder
+					.comment("Animals that pollen cannot be used on, from either animal crops or animal lilies")
+					.defineList("blacklist", ImmutableList.of(), Config::validateAnimal);
+		}
+		builder.pop();
+
+		// grass drops
+		builder.push("grassDrops");
+		{
+			dropAnimalSeeds = builder
+					.comment("If true, grass will rarely drop a random animal seed")
+					.define("animal_seeds", false);
+			dropAnimalLilies = builder
+					.comment("If true, sea grass will rarely drop a random animal lily")
+					.define("animal_lilies", false);
+			dropAnimalPollen = builder
+					.comment("If true, grass will rarely drop animal pollen")
+					.define("animal_pollen", true);
+			dropBlacklist = builder
+					.comment("Animals that will not drop from grass or sea grass, based on the other two lists")
+					.defineList("blacklist", ImmutableList.of(), Config::validateAnimal);
+		}
+		builder.pop();
+	}
+
+	// registered in AnimalCrops
+	public static void configChanged(final ModConfig.ConfigReloading event) {
+		if (event.getConfig().getType() == ModConfig.Type.SERVER) {
+			randomAnimalCrops = null;
+			randomAnimalLilies = null;
+		}
 	}
 
 	/**
@@ -115,5 +191,24 @@ public class Config {
 //		}
 
 		return true;
+	}
+
+	/**
+	 * Filters the given property by the drop blacklist, returning the filtered list
+	 * @param prop  Property to filter
+	 * @return  The filtered list
+	 */
+	private static List<? extends String> handleDropBlacklist(ConfigValue<List<? extends String>> prop) {
+		List<? extends String> list = prop.get();
+		if (list.isEmpty()) {
+			return ImmutableList.of();
+		}
+		List<? extends String> blacklist = dropBlacklist.get();
+		if (blacklist.isEmpty()) {
+			return list;
+		}
+		return list.stream()
+		           .filter((id) -> !blacklist.contains(id))
+		           .collect(Collectors.toList());
 	}
 }
