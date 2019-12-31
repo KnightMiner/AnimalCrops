@@ -53,9 +53,9 @@ public class Registration {
     IForgeRegistry<Block> r = event.getRegistry();
 
     Block.Properties props = Block.Properties.create(Material.PLANTS).tickRandomly().hardnessAndResistance(0).sound(SoundType.CROP);
-    register(r, new AnimalLilyBlock(props), "lily");
+    register(r, new AnimalLilyBlock(props, Config.animalLilies::get), "lily");
     props.doesNotBlockMovement();
-    register(r, new AnimalCropsBlock(props), "crops");
+    register(r, new AnimalCropsBlock(props, Config.animalCrops::get), "crops");
   }
 
   @SubscribeEvent

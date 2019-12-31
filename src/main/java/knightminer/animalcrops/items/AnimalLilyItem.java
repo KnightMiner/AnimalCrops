@@ -1,7 +1,5 @@
 package knightminer.animalcrops.items;
 
-import knightminer.animalcrops.core.Config;
-import knightminer.animalcrops.core.Utils;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -9,7 +7,6 @@ import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.fluid.Fluids;
-import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUseContext;
 import net.minecraft.stats.Stats;
@@ -17,7 +14,6 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
-import net.minecraft.util.NonNullList;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
@@ -33,15 +29,6 @@ public class AnimalLilyItem extends AnimalSeedsItem {
 	public AnimalLilyItem(Block crops, Properties props) {
 		super(crops, props);
 	}
-
-	@Override
-	public void fillItemGroup(ItemGroup tab, NonNullList<ItemStack> items) {
-    if (this.isInGroup(tab)) {
-      for(String entity : Config.animalLilies.get()) {
-        items.add(Utils.setEntityId(new ItemStack(this), entity));
-      }
-    }
-  }
 
   /* Special placement logic */
   @Override

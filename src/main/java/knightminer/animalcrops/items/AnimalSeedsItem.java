@@ -1,13 +1,10 @@
 package knightminer.animalcrops.items;
 
-import knightminer.animalcrops.core.Config;
 import knightminer.animalcrops.core.Utils;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.BlockItem;
-import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
@@ -50,14 +47,5 @@ public class AnimalSeedsItem extends BlockItem {
   @Deprecated
   public ItemStack makeSeed(String entity) {
     return Utils.setEntityId(new ItemStack(this), entity);
-  }
-
-  @Override
-  public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
-    if (this.isInGroup(group)) {
-      for(String entity : Config.animalCrops.get()) {
-        items.add(Utils.setEntityId(new ItemStack(this), entity));
-      }
-    }
   }
 }

@@ -14,12 +14,15 @@ import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.common.PlantType;
 
+import java.util.List;
+import java.util.function.Supplier;
+
 public class AnimalLilyBlock extends AnimalCropsBlock {
 
   protected static final VoxelShape LILY_PAD_AABB = makeCuboidShape(1, 0, 1, 15, 1, 15);
 
-  public AnimalLilyBlock(Properties props) {
-    super(props);
+  public AnimalLilyBlock(Properties props, Supplier<List<? extends String>> animals) {
+    super(props, animals);
   }
 
   /* Block properties */
