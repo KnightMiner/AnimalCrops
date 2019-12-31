@@ -4,8 +4,6 @@
   "item.animalcrops.seeds.default": "Animal Seeds",
   "item.animalcrops.seeds.tooltip": "Plant on grass or podzol to grow the animal",
 
-  "block.animalcrops.lily": "Animal Lily",
-
   "block.animalcrops.anemonemal": "Anemonemal",
   "item.animalcrops.anemonemal": "%s Seeds",
   "item.animalcrops.anemonemal.default": "Anemonemal Seeds",

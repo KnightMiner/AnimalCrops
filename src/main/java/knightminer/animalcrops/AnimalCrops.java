@@ -30,6 +30,7 @@ public class AnimalCrops {
 
 		ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, Config.SPEC);
 		MinecraftForge.EVENT_BUS.addListener(Registration::injectLoot);
+		MinecraftForge.EVENT_BUS.addGenericListener(Block.class, Registration::missingBlockMappings);
 		MinecraftForge.EVENT_BUS.addGenericListener(Item.class, Registration::missingItemMappings);
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(Config::configChanged);
 	}

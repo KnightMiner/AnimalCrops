@@ -39,7 +39,6 @@ public class ClientEvents {
 		// set render types to cutout
 		RenderType cutout = RenderType.func_228643_e_();
 		RenderTypeLookup.setRenderLayer(Registration.crops, cutout);
-		RenderTypeLookup.setRenderLayer(Registration.lily, cutout);
 		RenderTypeLookup.setRenderLayer(Registration.anemonemal, cutout);
 	}
 
@@ -56,7 +55,7 @@ public class ClientEvents {
 				return getEggColor(te.getTileData(), index);
 			}
 			return -1;
-		}, Registration.crops, Registration.lily, Registration.anemonemal);
+		}, Registration.crops, Registration.anemonemal);
 	}
 
 	@SubscribeEvent

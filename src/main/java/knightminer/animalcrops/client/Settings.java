@@ -29,8 +29,6 @@ public class Settings implements ISelectiveResourceReloadListener {
   private static final ResourceLocation LOCATION = new ResourceLocation(AnimalCrops.modID, "models/settings.json");
   /** JSON key for the crop property */
   private static final String CROP_ENTITY_KEY = "render_crop_entity";
-  /** JSON key for the lily property */
-  private static final String LILY_ENTITY_KEY = "render_lily_entity";
   /** JSON key for the anemonemal property */
   private static final String ANEMONEMAL_ENTITY_KEY = "render_anemonemal_entity";
 
@@ -57,7 +55,6 @@ public class Settings implements ISelectiveResourceReloadListener {
 
       // then grab the relevant settings values from the booleans
       renderCropEntity       = getTopBoolean(jsonFiles, CROP_ENTITY_KEY, true);
-      renderLilyEntity       = getTopBoolean(jsonFiles, LILY_ENTITY_KEY, true);
       renderAnemonemalEntity = getTopBoolean(jsonFiles, ANEMONEMAL_ENTITY_KEY, true);
     }
   }
@@ -129,9 +126,6 @@ public class Settings implements ISelectiveResourceReloadListener {
   public static boolean shouldRenderEntity(Block block) {
     if (block == Registration.crops) {
       return INSTANCE.renderCropEntity;
-    }
-    if (block == Registration.lily) {
-      return INSTANCE.renderLilyEntity;
     }
     if (block == Registration.anemonemal) {
       return INSTANCE.renderAnemonemalEntity;

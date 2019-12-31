@@ -1,8 +1,6 @@
 {
   "__comment": "If set to true, animal crops will render an entity model for the growing entity",
   "render_crop_entity": false,
-  "__comment": "If set to true, animal lilies will render an entity model for the growing entity",
-  "render_lily_entity": false,
   "__comment": "If set to true, anemonemals will render an entity model for the growing entity",
   "render_anemonemal_entity": false
 }
