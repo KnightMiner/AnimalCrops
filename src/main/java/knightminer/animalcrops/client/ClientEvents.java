@@ -40,6 +40,7 @@ public class ClientEvents {
 		RenderType cutout = RenderType.func_228643_e_();
 		RenderTypeLookup.setRenderLayer(Registration.crops, cutout);
 		RenderTypeLookup.setRenderLayer(Registration.lily, cutout);
+		RenderTypeLookup.setRenderLayer(Registration.anemonemal, cutout);
 	}
 
 	@SubscribeEvent
