@@ -34,7 +34,7 @@ public class ClientEvents {
 	@SubscribeEvent
 	public void registerTER(FMLClientSetupEvent event) {
 		// this is bound unconditionally, but no-ops if the pack is disabled
-		ClientRegistry.bindTileEntityRenderer(Registration.cropsTE, new RenderAnimalCrops(TileEntityRendererDispatcher.instance));
+		ClientRegistry.bindTileEntityRenderer(Registration.cropsTE, RenderAnimalCrops::new);
 
 		// set render types to cutout
 		RenderType cutout = RenderType.func_228643_e_();
