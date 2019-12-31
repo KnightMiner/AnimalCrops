@@ -44,6 +44,7 @@ public class Registration {
   public static final AnimalSeedsItem seeds = injected();
   @ObjectHolder("lily")
   public static final AnimalSeedsItem lilySeeds = injected();
+  public static final Item pollen = injected();
   @ObjectHolder("crops")
   public static final TileEntityType<AnimalCropsTileEntity> cropsTE = injected();
 
@@ -79,6 +80,7 @@ public class Registration {
   public static void registerMisc(FMLCommonSetupEvent event) {
     ComposterBlock.registerCompostable(0.5f, seeds);
     ComposterBlock.registerCompostable(0.5f, lilySeeds);
+    ComposterBlock.registerCompostable(0.5f, pollen);
 
     LootFunctionManager.registerFunction(new SetAnimalLootFunction.Serializer(getResource("set_animal")));
     LootFunctionManager.registerFunction(new RandomAnimalLootFunction.Serializer(getResource("random_animal")));
