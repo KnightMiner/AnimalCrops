@@ -17,7 +17,7 @@
             }
           }],
           "functions": [{ "function": "animalcrops:set_animal" }],
-          "name": "animalcrops:lily"
+          "name": "animalcrops:anemonemal"
         },
         {
           "type": "minecraft:item",
@@ -26,7 +26,7 @@
             "chance": 0.1
           }],
           "functions": [{ "function": "animalcrops:set_animal" }],
-          "name": "animalcrops:lily"
+          "name": "animalcrops:anemonemal"
         }
       ]
     }]

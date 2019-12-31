@@ -55,13 +55,13 @@ public class ClientEvents {
 				return getEggColor(te.getTileData(), index);
 			}
 			return -1;
-		}, Registration.crops, Registration.lily);
+		}, Registration.crops, Registration.lily, Registration.anemonemal);
 	}
 
 	@SubscribeEvent
 	public void registerItemColors(ColorHandlerEvent.Item event) {
 		event.getItemColors().register((stack, index) -> getEggColor(stack.getTag(), index),
-																	 Registration.seeds, Registration.lilySeeds);
+																	 Registration.seeds, Registration.anemonemalSeeds);
 	}
 
 

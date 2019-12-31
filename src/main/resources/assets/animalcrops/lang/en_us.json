@@ -1,10 +1,16 @@
 {
   "block.animalcrops.crops": "Animal Crops",
-  "block.animalcrops.lily": "Animal Lily",
   "item.animalcrops.seeds": "%s Seeds",
   "item.animalcrops.seeds.default": "Animal Seeds",
-  "item.animalcrops.lily": "%s Lily",
-  "item.animalcrops.lily.default": "Animal Lily",
+  "item.animalcrops.seeds.tooltip": "Plant on grass or podzol to grow the animal",
+
+  "block.animalcrops.lily": "Animal Lily",
+
+  "block.animalcrops.anemonemal": "Anemonemal",
+  "item.animalcrops.anemonemal": "%s Seeds",
+  "item.animalcrops.anemonemal.default": "Anemonemal Seeds",
+  "item.animalcrops.anemonemal.tooltip": "Plant underwater to grow the animal",
+
   "item.animalcrops.pollen": "Animal Pollen",
   "item.animalcrops.pollen.tooltip": "Use on animals to create animal seeds",
   "item.animalcrops.pollen.invalid": "No seeds available for %s"

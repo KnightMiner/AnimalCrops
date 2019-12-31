@@ -10,8 +10,10 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.CropsBlock;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
@@ -19,12 +21,16 @@ import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
+import java.util.List;
 import java.util.Random;
+import java.util.function.Supplier;
 
 public class AnimalCropsBlock extends CropsBlock {
 
-	public AnimalCropsBlock(Properties props) {
+	protected final Supplier<List<? extends String>> animals;
+	public AnimalCropsBlock(Properties props, Supplier<List<? extends String>> animals) {
 		super(props);
+		this.animals = animals;
 	}
 
 	/* Crop properties */
@@ -97,6 +103,13 @@ public class AnimalCropsBlock extends CropsBlock {
 			Utils.getEntityID(te.getTileData()).ifPresent((id)->Utils.setEntityId(stack, id));
 		}
 		return stack;
+	}
+
+	@Override
+	public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
+		for (String id : animals.get()) {
+			items.add(Utils.setEntityId(new ItemStack(this), id));
+		}
 	}
 
 

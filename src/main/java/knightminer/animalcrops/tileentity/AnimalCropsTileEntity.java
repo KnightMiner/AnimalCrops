@@ -9,6 +9,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.monster.SlimeEntity;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
@@ -40,7 +41,7 @@ public class AnimalCropsTileEntity extends TileEntity {
 	 * @param entityID  Entity ID to set
 	 */
 	public void setEntity(String entityID) {
-		if(world.isRemote || entityID == null) {
+		if(entityID == null) {
 			return;
 		}
 
@@ -51,7 +52,9 @@ public class AnimalCropsTileEntity extends TileEntity {
 
 		CompoundNBT data = this.getTileData();
 		data.putString(Utils.ENTITY_TAG, entityID);
-		data.putInt(TAG_DIRECTION, world.rand.nextInt(4));
+		if (!world.isRemote) {
+			data.putInt(TAG_DIRECTION, world.rand.nextInt(4));
+		}
 		this.markDirty();
 	}
 
@@ -76,6 +79,7 @@ public class AnimalCropsTileEntity extends TileEntity {
 		}
 
 		// if the entity is not MobEntity, discard it
+		// should not happen as all spawn eggs are MobEntity
 		if (!(created instanceof MobEntity)) {
 			created.remove();
 			return null;
@@ -83,6 +87,9 @@ public class AnimalCropsTileEntity extends TileEntity {
 
 		// set the age for ageable entities
 		MobEntity entity = (MobEntity)created;
+		if (getBlockState().getFluidState().getFluid() == Fluids.WATER) {
+			entity.inWater = true;
+		}
 		entity.prevRotationYaw = entity.rotationYaw = this.getAngle();
 		entity.prevRotationYawHead = entity.rotationYawHead = entity.rotationYaw;
 		entity.prevRenderYawOffset = entity.renderYawOffset = entity.rotationYaw;
@@ -173,6 +180,6 @@ public class AnimalCropsTileEntity extends TileEntity {
 	 * @return  True if the ID is valid, false otherwise
 	 */
 	private static boolean entityValid(String entityID) {
-		return Config.animalCrops.get().contains(entityID) || Config.animalLilies.get().contains(entityID);
+		return Config.animalCrops.get().contains(entityID) || Config.anemonemals.get().contains(entityID);
 	}
 }

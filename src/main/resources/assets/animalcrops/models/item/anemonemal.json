@@ -1,0 +1,7 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "animalcrops:item/anemonemal_seeds",
+    "layer1": "animalcrops:item/anemonemal_seeds_overlay"
+  }
+}
