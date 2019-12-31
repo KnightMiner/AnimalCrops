@@ -13,5 +13,5 @@
 
   "item.animalcrops.pollen": "Animal Pollen",
   "item.animalcrops.pollen.tooltip": "Use on animals to create animal seeds",
-  "item.animalcrops.pollen.invalid": "No seeds available for %s"
+  "item.animalcrops.pollen.invalid": "Cannot create seeds for %s"
 }
