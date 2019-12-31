@@ -1,7 +1,0 @@
-{
-  "parent": "item/generated",
-  "textures": {
-    "layer0": "animalcrops:item/lily",
-    "layer1": "animalcrops:item/lily_overlay"
-  }
-}

@@ -37,9 +37,9 @@ public class AnimalPollenItem extends Item {
     if (!Config.pollenBlacklist.get().contains(id)) {
       // next, check which type of entity we are grabbing
       boolean isCrops = Config.animalCrops.get().contains(id);
-      if (isCrops || Config.animalLilies.get().contains(id)) {
+      if (isCrops || Config.anemonemals.get().contains(id)) {
         // create the seed item
-        ItemStack seeds = new ItemStack(isCrops ? Registration.seeds : Registration.lilySeeds);
+        ItemStack seeds = new ItemStack(isCrops ? Registration.seeds : Registration.anemonemalSeeds);
         Utils.setEntityId(seeds, id);
         player.setHeldItem(hand, Utils.fillContainer(player, stack, seeds));
 

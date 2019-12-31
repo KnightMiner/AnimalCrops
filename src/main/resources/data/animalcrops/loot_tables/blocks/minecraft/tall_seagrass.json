@@ -5,7 +5,7 @@
     "conditions": [
       {
         "condition": "animalcrops:config",
-        "prop": "lily"
+        "prop": "anemonemal"
       },
       { "condition": "minecraft:survives_explosion" },
       {
@@ -28,11 +28,11 @@
     "rolls": 1,
     "entries": [{
       "type": "minecraft:item",
-      "name": "animalcrops:lily"
+      "name": "animalcrops:anemonemal"
     }],
     "functions": [{
       "function": "animalcrops:random_animal",
-      "type": "lily"
+      "type": "anemonemal"
     }]
   }]
 }

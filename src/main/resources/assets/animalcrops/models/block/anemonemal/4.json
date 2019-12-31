@@ -1,0 +1,7 @@
+{
+  "parent": "animalcrops:block/anemonemal/base",
+  "textures": {
+    "base":    "animalcrops:block/anemonemal_4",
+    "overlay": "animalcrops:block/anemonemal_4_overlay"
+  }
+}

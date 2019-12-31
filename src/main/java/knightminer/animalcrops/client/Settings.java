@@ -31,10 +31,13 @@ public class Settings implements ISelectiveResourceReloadListener {
   private static final String CROP_ENTITY_KEY = "render_crop_entity";
   /** JSON key for the lily property */
   private static final String LILY_ENTITY_KEY = "render_lily_entity";
+  /** JSON key for the anemonemal property */
+  private static final String ANEMONEMAL_ENTITY_KEY = "render_anemonemal_entity";
 
   // current settings
   private boolean renderCropEntity = true;
   private boolean renderLilyEntity = true;
+  private boolean renderAnemonemalEntity = true;
 
   public static final Settings INSTANCE = new Settings();
   private Settings() {}
@@ -53,8 +56,9 @@ public class Settings implements ISelectiveResourceReloadListener {
       }
 
       // then grab the relevant settings values from the booleans
-      renderCropEntity = getTopBoolean(jsonFiles, CROP_ENTITY_KEY, true);
-      renderLilyEntity = getTopBoolean(jsonFiles, LILY_ENTITY_KEY, true);
+      renderCropEntity       = getTopBoolean(jsonFiles, CROP_ENTITY_KEY, true);
+      renderLilyEntity       = getTopBoolean(jsonFiles, LILY_ENTITY_KEY, true);
+      renderAnemonemalEntity = getTopBoolean(jsonFiles, ANEMONEMAL_ENTITY_KEY, true);
     }
   }
 
@@ -128,6 +132,9 @@ public class Settings implements ISelectiveResourceReloadListener {
     }
     if (block == Registration.lily) {
       return INSTANCE.renderLilyEntity;
+    }
+    if (block == Registration.anemonemal) {
+      return INSTANCE.renderAnemonemalEntity;
     }
     // fallback in case some other mod extends this
     return true;

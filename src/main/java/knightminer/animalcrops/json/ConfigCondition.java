@@ -58,7 +58,7 @@ public class ConfigCondition implements ILootCondition {
 
   static {
     add("seeds", Config::dropAnimalSeeds);
-    add("lily", Config::dropAnimalLilies);
+    add("anemonemal", Config::dropAnemonemals);
     add("pollen", Config.dropAnimalPollen::get);
   }
 }

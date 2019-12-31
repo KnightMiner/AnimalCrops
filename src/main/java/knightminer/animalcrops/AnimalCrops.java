@@ -5,6 +5,7 @@ import knightminer.animalcrops.core.Config;
 import knightminer.animalcrops.core.Registration;
 import knightminer.animalcrops.core.Utils;
 import net.minecraft.block.Block;
+import net.minecraft.item.Item;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.Tag;
 import net.minecraftforge.api.distmarker.Dist;
@@ -29,6 +30,7 @@ public class AnimalCrops {
 
 		ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, Config.SPEC);
 		MinecraftForge.EVENT_BUS.addListener(Registration::injectLoot);
+		MinecraftForge.EVENT_BUS.addGenericListener(Item.class, Registration::missingItemMappings);
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(Config::configChanged);
 	}
 }

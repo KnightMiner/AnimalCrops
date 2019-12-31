@@ -22,6 +22,6 @@ public class JEIPlugin implements IModPlugin {
 		ISubtypeInterpreter interpreter = (stack) -> Utils.getEntityID(stack.getTag()).orElse("");
 
 		registry.registerSubtypeInterpreter(Registration.seeds, interpreter);
-		registry.registerSubtypeInterpreter(Registration.lilySeeds, interpreter);
+		registry.registerSubtypeInterpreter(Registration.anemonemalSeeds, interpreter);
 	}
 }

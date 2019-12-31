@@ -29,7 +29,7 @@ public class AnimalLilyBlock extends AnimalCropsBlock {
 
   @Override
   protected AnimalSeedsItem getSeed() {
-    return Registration.lilySeeds;
+    return Registration.anemonemalSeeds;
   }
 
   @Override

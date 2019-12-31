@@ -42,8 +42,8 @@ public class Config {
 			"minecraft:villager",
 			"minecraft:wolf",
 			"waddles:adelie_penguin");
-	public static ConfigValue<List<? extends String>> animalLilies;
-	private static final List<String> ANIMAL_LILY_DEFAULTS = ImmutableList.of(
+	public static ConfigValue<List<? extends String>> anemonemals;
+	private static final List<String> ANIMAL_ANEMONEMAL_DEFAULTS = ImmutableList.of(
 			"minecraft:cod",
 			"minecraft:dolphin",
 			"minecraft:pufferfish",
@@ -73,18 +73,18 @@ public class Config {
 	public static boolean dropAnimalSeeds() {
 		return dropAnimalSeeds.get() && !randomAnimalCrops().isEmpty();
 	}
-	// animal lilies
-	private static List<? extends String> randomAnimalLilies;
-	/** Returns the list of animal lilies filtered by the drop blacklist */
-	public static List<? extends String> randomAnimalLilies() {
-		if (randomAnimalLilies != null) {
-			return randomAnimalLilies;
+	// anemonemals
+	private static List<? extends String> randomAnemonemals;
+	/** Returns the list of anemonemals filtered by the drop blacklist */
+	public static List<? extends String> randomAnemonemals() {
+		if (randomAnemonemals != null) {
+			return randomAnemonemals;
 		}
-		return randomAnimalLilies = handleDropBlacklist(animalLilies);
+		return randomAnemonemals = handleDropBlacklist(anemonemals);
 	}
-	private static BooleanValue dropAnimalLilies;
-	public static boolean dropAnimalLilies() {
-		return dropAnimalLilies.get() && !randomAnimalLilies().isEmpty();
+	private static BooleanValue dropAnemonemals;
+	public static boolean dropAnemonemals() {
+		return dropAnemonemals.get() && !randomAnemonemals().isEmpty();
 	}
 
 	static {
@@ -103,9 +103,9 @@ public class Config {
 			animalCrops = builder
 					.comment("List of animals to add as animal seeds. Must extend MobEntity and have a spawn egg.")
 					.defineList("animalCrops", validateDefaults(ANIMAL_CROP_DEFAULTS), Config::validateAnimal);
-			animalLilies = builder
-					.comment("List of water animals to add as animal lilies. Must extend MobEntity and have a spawn egg.")
-					.defineList("animalLilies", validateDefaults(ANIMAL_LILY_DEFAULTS), Config::validateAnimal);
+			anemonemals = builder
+					.comment("List of water animals to add as water animal crops: anemonemals. Must extend MobEntity and have a spawn egg.")
+					.defineList("anemonemals", validateDefaults(ANIMAL_ANEMONEMAL_DEFAULTS), Config::validateAnimal);
 		}
 		builder.pop();
 
@@ -117,7 +117,7 @@ public class Config {
 					         "If DAMAGE, the entity will take 2 hearts of damage when pollen are used")
 					.defineEnum("action", AnimalPollenItem.Action.DAMAGE);
 			pollenBlacklist = builder
-					.comment("Animals that pollen cannot be used on, from either animal crops or animal lilies")
+					.comment("Animals that pollen cannot be used on, from either animal crops or anemonemals")
 					.defineList("blacklist", ImmutableList.of(), Config::validateAnimal);
 		}
 		builder.pop();
@@ -128,9 +128,9 @@ public class Config {
 			dropAnimalSeeds = builder
 					.comment("If true, grass will rarely drop a random animal seed")
 					.define("animal_seeds", false);
-			dropAnimalLilies = builder
-					.comment("If true, sea grass will rarely drop a random animal lily")
-					.define("animal_lilies", false);
+			dropAnemonemals = builder
+					.comment("If true, sea grass will rarely drop a random anemonemal")
+					.define("anemonemal", false);
 			dropAnimalPollen = builder
 					.comment("If true, grass will rarely drop animal pollen")
 					.define("animal_pollen", true);
@@ -145,7 +145,7 @@ public class Config {
 	public static void configChanged(final ModConfig.ConfigReloading event) {
 		if (event.getConfig().getType() == ModConfig.Type.SERVER) {
 			randomAnimalCrops = null;
-			randomAnimalLilies = null;
+			randomAnemonemals = null;
 		}
 	}
 
@@ -160,8 +160,8 @@ public class Config {
 
 	/**
 	 * Validates that all defaults are valid
-	 * @param obj
-	 * @return
+	 * @param obj  Object that may be an entity ID
+	 * @return  Validates the entity ID is available
 	 */
 	private static boolean validateAnimal(Object obj) {
 		if (!(obj instanceof String)) {
@@ -182,12 +182,6 @@ public class Config {
 			AnimalCrops.log.error("Invalid entity {}, must have a spawn egg", animal);
 			return false;
 		}
-
-		// insure the entity type is valid, we only allow entity living
-//		if(!MobEntity.class.isAssignableFrom(type.getClass())) {
-//			AnimalCrops.log.error("Invalid entity {}, must extend MobEntity", animal);
-//			return false;
-//		}
 
 		return true;
 	}

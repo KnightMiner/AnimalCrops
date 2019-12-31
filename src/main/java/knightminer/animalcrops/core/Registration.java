@@ -1,9 +1,9 @@
 package knightminer.animalcrops.core;
 
 import knightminer.animalcrops.AnimalCrops;
+import knightminer.animalcrops.blocks.AnemonemalBlock;
 import knightminer.animalcrops.blocks.AnimalCropsBlock;
 import knightminer.animalcrops.blocks.AnimalLilyBlock;
-import knightminer.animalcrops.items.AnimalLilyItem;
 import knightminer.animalcrops.items.AnimalPollenItem;
 import knightminer.animalcrops.items.AnimalSeedsItem;
 import knightminer.animalcrops.json.ConfigCondition;
@@ -27,6 +27,8 @@ import net.minecraft.world.storage.loot.conditions.LootConditionManager;
 import net.minecraft.world.storage.loot.functions.LootFunctionManager;
 import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.event.RegistryEvent.MissingMappings;
+import net.minecraftforge.event.RegistryEvent.MissingMappings.Mapping;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
@@ -40,10 +42,10 @@ import javax.annotation.Nonnull;
 @ObjectHolder(AnimalCrops.modID)
 @EventBusSubscriber(modid = AnimalCrops.modID, bus = Bus.MOD)
 public class Registration {
-  public static final Block crops = injected(), lily = injected();
+  public static final Block crops = injected(), lily = injected(), anemonemal = injected();
   public static final AnimalSeedsItem seeds = injected();
-  @ObjectHolder("lily")
-  public static final AnimalSeedsItem lilySeeds = injected();
+  @ObjectHolder("anemonemal")
+  public static final AnimalSeedsItem anemonemalSeeds = injected();
   public static final Item pollen = injected();
   @ObjectHolder("crops")
   public static final TileEntityType<AnimalCropsTileEntity> cropsTE = injected();
@@ -53,16 +55,17 @@ public class Registration {
     IForgeRegistry<Block> r = event.getRegistry();
 
     Block.Properties props = Block.Properties.create(Material.PLANTS).tickRandomly().hardnessAndResistance(0).sound(SoundType.CROP);
-    register(r, new AnimalLilyBlock(props, Config.animalLilies::get), "lily");
+    register(r, new AnimalLilyBlock(props, Config.anemonemals::get), "lily");
     props.doesNotBlockMovement();
     register(r, new AnimalCropsBlock(props, Config.animalCrops::get), "crops");
+    register(r, new AnemonemalBlock(props, Config.anemonemals::get), "anemonemal");
   }
 
   @SubscribeEvent
   public static void registerTE(RegistryEvent.Register<TileEntityType<?>> event) {
     IForgeRegistry<TileEntityType<?>> r = event.getRegistry();
 
-    register(r, TileEntityType.Builder.create(AnimalCropsTileEntity::new, crops, lily).build(null), "crops");
+    register(r, TileEntityType.Builder.create(AnimalCropsTileEntity::new, crops, lily, anemonemal).build(null), "crops");
   }
 
   @SubscribeEvent
@@ -71,7 +74,7 @@ public class Registration {
     Item.Properties props = (new Item.Properties()).group(ItemGroup.MATERIALS);
 
     register(r, new AnimalSeedsItem(crops, props), "seeds");
-    register(r, new AnimalLilyItem(lily, props), "lily");
+    register(r, new AnimalSeedsItem(anemonemal, props), "anemonemal");
     register(r, new AnimalPollenItem(props), "pollen");
   }
 
@@ -79,12 +82,21 @@ public class Registration {
   @SubscribeEvent
   public static void registerMisc(FMLCommonSetupEvent event) {
     ComposterBlock.registerCompostable(0.5f, seeds);
-    ComposterBlock.registerCompostable(0.5f, lilySeeds);
+    ComposterBlock.registerCompostable(0.5f, anemonemalSeeds);
     ComposterBlock.registerCompostable(0.5f, pollen);
 
     LootFunctionManager.registerFunction(new SetAnimalLootFunction.Serializer(getResource("set_animal")));
     LootFunctionManager.registerFunction(new RandomAnimalLootFunction.Serializer(getResource("random_animal")));
     LootConditionManager.registerCondition(new ConfigCondition.Serializer(getResource("config")));
+  }
+
+  // registered to FORGE event bus in AnimalCrops
+  public static void missingItemMappings(MissingMappings<Item> event) {
+    for (Mapping<Item> mapping : event.getAllMappings()) {
+      if (AnimalCrops.modID.equals(mapping.key.getNamespace()) && "lily".equals(mapping.key.getPath())) {
+        mapping.remap(anemonemalSeeds);
+      }
+    }
   }
 
   // registered to FORGE event bus in AnimalCrops
