@@ -81,7 +81,7 @@ public class AnimalPollenItem extends Item {
       double speedX = world.rand.nextGaussian() * 0.02D;
       double speedY = world.rand.nextGaussian() * 0.02D;
       double speedZ = world.rand.nextGaussian() * 0.02D;
-      world.addParticle(particle, entity.func_226282_d_(1.0D), entity.func_226279_cv_(), entity.func_226287_g_(1.0D), speedX, speedY, speedZ);
+      world.addParticle(particle, entity.getPosXRandom(1.0D), entity.getPosYRandom(), entity.getPosZRandom(1.0D), speedX, speedY, speedZ);
     }
   }
 

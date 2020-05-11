@@ -37,7 +37,7 @@ public class ClientEvents {
 		ClientRegistry.bindTileEntityRenderer(Registration.cropsTE, RenderAnimalCrops::new);
 
 		// set render types to cutout
-		RenderType cutout = RenderType.func_228643_e_();
+		RenderType cutout = RenderType.getCutout();
 		RenderTypeLookup.setRenderLayer(Registration.crops, cutout);
 		RenderTypeLookup.setRenderLayer(Registration.anemonemal, cutout);
 	}

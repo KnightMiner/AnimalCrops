@@ -3,6 +3,7 @@ package knightminer.animalcrops.client;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GLX;
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import knightminer.animalcrops.tileentity.AnimalCropsTileEntity;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CropsBlock;
@@ -22,7 +23,7 @@ public class RenderAnimalCrops extends TileEntityRenderer<AnimalCropsTileEntity>
   }
 
   @Override
-  public void func_225616_a_(AnimalCropsTileEntity te, float delta, MatrixStack stack, IRenderTypeBuffer buffer, int lighting, int var6) {
+  public void render(AnimalCropsTileEntity te, float delta, MatrixStack stack, IRenderTypeBuffer buffer, int lighting, int var6) {
     // check with the settings file to determine if this block renders its TE
     if(!Settings.shouldRenderEntity(te.getBlockState().getBlock())) {
       return;
@@ -38,17 +39,19 @@ public class RenderAnimalCrops extends TileEntityRenderer<AnimalCropsTileEntity>
     }
 
     // its pretty easy, just draw the entity
-    stack.func_227860_a_(); // push matrix
-    stack.func_227861_a_(0.5, 0, 0.5); // translate
+    stack.push();
+    stack.translate(0.5, 0, 0.5);
     // TODO: tint entity green, is this still possible?
-    // GlStateManager.color4f(0.65f, 1.0f, 0.65f, 1.0f);
+    //RenderSystem.color3f(0.65f, 1.0f, 0.65f);
+    //GlStateManager.color4f(0.65f, 1.0f, 0.65f, 1.0f);
     if(age < 7) {
       float scale = age / 7f;
-      stack.func_227862_a_(scale, scale, scale); // scale
+      stack.scale(scale, scale, scale);
     }
-    // renderEntity(entity, x, y, z, rotation, delta, stack, buffer, lighting)
-    mc.getRenderManager().func_229084_a_(entity, 0, 0, 0, 0, 0, stack, buffer, lighting);
+    // renderEntityStatic(entity, x, y, z, rotation, delta, stack, buffer, lighting)
+    mc.getRenderManager().renderEntityStatic(entity, 0, 0, 0, 0, 0, stack, buffer, lighting);
     //GlStateManager.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-    stack.func_227865_b_(); // pop matrix
+    //RenderSystem.color3f(1.0f, 1.0f, 1.0f);
+    stack.pop(); // pop matrix
   }
 }

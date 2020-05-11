@@ -72,7 +72,7 @@ public class SimpleCropPack extends ResourcePack {
   }
 
   @Override
-  public Collection<ResourceLocation> func_225637_a_(ResourcePackType type, String domain, String path, int maxDepth, Predicate<String> filter) {
+  public Collection<ResourceLocation> getAllResourceLocations(ResourcePackType type, String domain, String path, int maxDepth, Predicate<String> filter) {
     // this method appears to only be called for fonts and GUIs, so just return an empty list as neither is used here
     return Collections.emptyList();
   }

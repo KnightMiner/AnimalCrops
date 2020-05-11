@@ -31,7 +31,7 @@ public class AnemonemalBlock extends AnimalCropsBlock implements ILiquidContaine
 
   @Override
   protected boolean isValidGround(BlockState state, IBlockReader world, BlockPos pos) {
-    return state.func_224755_d(world, pos, Direction.UP) && state.getBlock() != Blocks.MAGMA_BLOCK;
+    return state.isSolidSide(world, pos, Direction.UP) && state.getBlock() != Blocks.MAGMA_BLOCK;
   }
 
   @Override

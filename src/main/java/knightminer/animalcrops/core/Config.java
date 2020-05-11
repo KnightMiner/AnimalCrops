@@ -143,7 +143,7 @@ public class Config {
 	}
 
 	// registered in AnimalCrops
-	public static void configChanged(final ModConfig.ConfigReloading event) {
+	public static void configChanged(final ModConfig.Reloading event) {
 		if (event.getConfig().getType() == ModConfig.Type.SERVER) {
 			randomAnimalCrops = null;
 			randomAnemonemals = null;
