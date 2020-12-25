@@ -7,14 +7,15 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSyntaxException;
 import knightminer.animalcrops.AnimalCrops;
 import knightminer.animalcrops.core.Config;
+import knightminer.animalcrops.core.Registration;
 import knightminer.animalcrops.core.Utils;
 import net.minecraft.item.ItemStack;
+import net.minecraft.loot.LootContext;
+import net.minecraft.loot.LootFunction;
+import net.minecraft.loot.LootFunctionType;
+import net.minecraft.loot.LootParameter;
+import net.minecraft.loot.conditions.ILootCondition;
 import net.minecraft.util.JSONUtils;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.storage.loot.LootContext;
-import net.minecraft.world.storage.loot.LootFunction;
-import net.minecraft.world.storage.loot.LootParameter;
-import net.minecraft.world.storage.loot.conditions.ILootCondition;
 
 import javax.annotation.Nonnull;
 import java.util.HashMap;
@@ -54,11 +55,12 @@ public class RandomAnimalLootFunction extends LootFunction {
     return ImmutableSet.of();
   }
 
-  public static class Serializer extends LootFunction.Serializer<RandomAnimalLootFunction> {
-    public Serializer(ResourceLocation location) {
-      super(location, RandomAnimalLootFunction.class);
-    }
+  @Override
+  public LootFunctionType getFunctionType() {
+    return Registration.Loot.randomAnimalFunction;
+  }
 
+  public static class Serializer extends LootFunction.Serializer<RandomAnimalLootFunction> {
     @Override
     public void serialize(JsonObject json, RandomAnimalLootFunction randAnimal, JsonSerializationContext context) {
       super.serialize(json, randAnimal, context);

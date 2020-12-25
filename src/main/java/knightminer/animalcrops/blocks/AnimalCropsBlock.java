@@ -21,6 +21,7 @@ import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Supplier;
@@ -63,14 +64,15 @@ public class AnimalCropsBlock extends CropsBlock {
 	}
 
 	@Override
-	public void onBlockPlacedBy(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
+	public void onBlockPlacedBy(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
 		// set the crop's entity
 		TileEntity te = world.getTileEntity(pos);
 		if(te instanceof AnimalCropsTileEntity) {
-			Utils.getEntityID(stack.getTag()).ifPresent((id) -> ((AnimalCropsTileEntity)te).setEntity(id));
+			Utils.getEntityID(stack.getTag()).ifPresent(((AnimalCropsTileEntity)te)::setEntity);
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	@Deprecated
 	@Override
 	public void onReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {

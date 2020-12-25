@@ -6,7 +6,6 @@ import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
@@ -28,10 +27,11 @@ public class AnimalSeedsItem extends BlockItem {
     return this.getDefaultTranslationKey();
   }
 
+	@SuppressWarnings("Convert2MethodRef")
 	@Override
   public ITextComponent getDisplayName(ItemStack stack) {
     return Utils.getEntityID(stack.getTag())
-                .flatMap(EntityType::byKey)
+                .flatMap(loc -> EntityType.byKey(loc))
                 .map(EntityType::getTranslationKey)
                 .map((key) -> new TranslationTextComponent(this.getTranslationKey(), new TranslationTextComponent(key)))
                 .orElseGet(() -> new TranslationTextComponent(this.getTranslationKey() + ".default"));
@@ -42,24 +42,5 @@ public class AnimalSeedsItem extends BlockItem {
   public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
     super.addInformation(stack, worldIn, tooltip, flagIn);
     tooltip.add(new TranslationTextComponent(this.getTranslationKey() + ".tooltip"));
-  }
-
-  @Deprecated
-  public ItemStack makeSeed(ResourceLocation entity) {
-    if(entity == null) {
-        return new ItemStack(this);
-    }
-		return makeSeed(entity.toString());
-  }
-
-  /**
-   * Makes a seed stack from the given entity ID
-   * @param entity  Entity ID
-   * @return  Seed containing that entity
-   * @deprecated  Use {@link Utils::setEntityId(ItemStack, String)}
-   */
-  @Deprecated
-  public ItemStack makeSeed(String entity) {
-    return Utils.setEntityId(new ItemStack(this), entity);
   }
 }

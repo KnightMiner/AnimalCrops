@@ -24,8 +24,7 @@ public abstract class Utils {
    * @param tags  Tag compound, from either a TE or a stack
    * @return  Entity resource location
    */
-  @Nullable
-  public static Optional<String> getEntityID(CompoundNBT tags) {
+  public static Optional<String> getEntityID(@Nullable CompoundNBT tags) {
     // no tags? skip
     if (tags == null) {
       return Optional.empty();
@@ -59,6 +58,7 @@ public abstract class Utils {
    * @param type  Entity type for the egg
    * @return  Spawn egg for the entity type
    */
+  @Nullable
   public static SpawnEggItem getEgg(EntityType<?> type) {
     return SpawnEggItem.EGGS.get(type);
   }

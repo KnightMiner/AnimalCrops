@@ -6,8 +6,8 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ILiquidContainer;
 import net.minecraft.fluid.Fluid;
+import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
-import net.minecraft.fluid.IFluidState;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.util.Direction;
@@ -37,7 +37,7 @@ public class AnemonemalBlock extends AnimalCropsBlock implements ILiquidContaine
   @Override
   @Nullable
   public BlockState getStateForPlacement(BlockItemUseContext context) {
-    IFluidState fluid = context.getWorld().getFluidState(context.getPos());
+    FluidState fluid = context.getWorld().getFluidState(context.getPos());
     return fluid.isTagged(FluidTags.WATER) && fluid.getLevel() == 8 ? super.getStateForPlacement(context) : null;
   }
 
@@ -53,9 +53,10 @@ public class AnemonemalBlock extends AnimalCropsBlock implements ILiquidContaine
     return state;
   }
 
+  @SuppressWarnings("deprecation")
   @Deprecated
   @Override
-  public IFluidState getFluidState(BlockState state) {
+  public FluidState getFluidState(BlockState state) {
     return Fluids.WATER.getStillFluidState(false);
   }
 
@@ -65,7 +66,7 @@ public class AnemonemalBlock extends AnimalCropsBlock implements ILiquidContaine
   }
 
   @Override
-  public boolean receiveFluid(IWorld world, BlockPos pos, BlockState state, IFluidState fluidState) {
+  public boolean receiveFluid(IWorld world, BlockPos pos, BlockState state, FluidState fluidState) {
     return false;
   }
 }

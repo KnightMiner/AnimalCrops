@@ -16,14 +16,15 @@ import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
+import net.minecraft.loot.ConstantRange;
+import net.minecraft.loot.LootConditionType;
+import net.minecraft.loot.LootFunctionType;
+import net.minecraft.loot.LootPool;
+import net.minecraft.loot.LootTable;
+import net.minecraft.loot.TableLootEntry;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.storage.loot.ConstantRange;
-import net.minecraft.world.storage.loot.LootPool;
-import net.minecraft.world.storage.loot.LootTable;
-import net.minecraft.world.storage.loot.TableLootEntry;
-import net.minecraft.world.storage.loot.conditions.LootConditionManager;
-import net.minecraft.world.storage.loot.functions.LootFunctionManager;
+import net.minecraft.util.registry.Registry;
 import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.RegistryEvent.MissingMappings;
@@ -37,7 +38,9 @@ import net.minecraftforge.registries.IForgeRegistryEntry;
 import net.minecraftforge.registries.ObjectHolder;
 
 import javax.annotation.Nonnull;
+import java.util.Objects;
 
+@SuppressWarnings("unused")
 @ObjectHolder(AnimalCrops.modID)
 @EventBusSubscriber(modid = AnimalCrops.modID, bus = Bus.MOD)
 public class Registration {
@@ -49,8 +52,15 @@ public class Registration {
   @ObjectHolder("crops")
   public static final TileEntityType<AnimalCropsTileEntity> cropsTE = injected();
 
+  // subclass to prevent conflict with non-Forge registries and object holder
+  public static class Loot {
+    public static LootFunctionType setAnimalFunction;
+    public static LootFunctionType randomAnimalFunction;
+    public static LootConditionType configCondition;
+  }
+
   @SubscribeEvent
-  public static void registerBlocks(RegistryEvent.Register<Block> event) {
+  static void registerBlocks(RegistryEvent.Register<Block> event) {
     IForgeRegistry<Block> r = event.getRegistry();
 
     Block.Properties props = Block.Properties.create(Material.PLANTS).tickRandomly().hardnessAndResistance(0).sound(SoundType.CROP).doesNotBlockMovement();
@@ -59,14 +69,15 @@ public class Registration {
   }
 
   @SubscribeEvent
-  public static void registerTE(RegistryEvent.Register<TileEntityType<?>> event) {
+  static void registerTE(RegistryEvent.Register<TileEntityType<?>> event) {
     IForgeRegistry<TileEntityType<?>> r = event.getRegistry();
 
+    //noinspection ConstantConditions
     register(r, TileEntityType.Builder.create(AnimalCropsTileEntity::new, crops, anemonemal).build(null), "crops");
   }
 
   @SubscribeEvent
-  public static void registerItems(RegistryEvent.Register<Item> event) {
+  static void registerItems(RegistryEvent.Register<Item> event) {
     IForgeRegistry<Item> r = event.getRegistry();
     Item.Properties props = (new Item.Properties()).group(ItemGroup.MATERIALS);
 
@@ -77,14 +88,14 @@ public class Registration {
 
   // anything with no register event
   @SubscribeEvent
-  public static void registerMisc(FMLCommonSetupEvent event) {
+  static void registerMisc(FMLCommonSetupEvent event) {
     ComposterBlock.registerCompostable(0.5f, seeds);
     ComposterBlock.registerCompostable(0.5f, anemonemalSeeds);
     ComposterBlock.registerCompostable(0.5f, pollen);
 
-    LootFunctionManager.registerFunction(new SetAnimalLootFunction.Serializer(getResource("set_animal")));
-    LootFunctionManager.registerFunction(new RandomAnimalLootFunction.Serializer(getResource("random_animal")));
-    LootConditionManager.registerCondition(new ConfigCondition.Serializer(getResource("config")));
+    Loot.setAnimalFunction = register(Registry.LOOT_FUNCTION_TYPE, "set_animal", new LootFunctionType(new SetAnimalLootFunction.Serializer()));
+    Loot.randomAnimalFunction = register(Registry.LOOT_FUNCTION_TYPE, "random_animal", new LootFunctionType(new RandomAnimalLootFunction.Serializer()));
+    Loot.configCondition = register(Registry.LOOT_CONDITION_TYPE, "config", new LootConditionType(new ConfigCondition.Serializer()));
   }
 
   // registered to FORGE event bus in AnimalCrops
@@ -120,9 +131,9 @@ public class Registration {
 
   /**
    * Helper method to get rid of warnings for object holder annotations
-   * @param <T>
    * @return Null as required for Object Holder, but marked Nonnull to prevent null warnings
    */
+  @SuppressWarnings("ConstantConditions")
   @Nonnull
   private static <T> T injected() {
     return null;
@@ -150,13 +161,17 @@ public class Registration {
     registry.register(value);
   }
 
+  private static <T> T register(Registry<? super T> registry, String name, T value) {
+    return Registry.register(registry, getResource(name), value);
+  }
+
   /**
    * Injects an custom loot pool from animalcrops:blocks/minecraft/ into the vanilla block
    * @param event  Event, used to determine if this is the proper loot table
    * @param block  Block to inject loot into
    */
   private static void addToBlockLoot(LootTableLoadEvent event, Block block) {
-    String name = block.getRegistryName().getPath();
+    String name = Objects.requireNonNull(block.getRegistryName()).getPath();
     if (!event.getName().getNamespace().equals("minecraft") || !event.getName().getPath().equals("blocks/" + name)) {
       return;
     }

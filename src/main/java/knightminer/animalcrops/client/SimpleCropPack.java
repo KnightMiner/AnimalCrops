@@ -2,6 +2,7 @@ package knightminer.animalcrops.client;
 
 import com.google.common.collect.ImmutableSet;
 import knightminer.animalcrops.AnimalCrops;
+import net.minecraft.resources.IPackNameDecorator;
 import net.minecraft.resources.ResourcePack;
 import net.minecraft.resources.ResourcePackFileNotFoundException;
 import net.minecraft.resources.ResourcePackInfo;
@@ -14,8 +15,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public class SimpleCropPack extends ResourcePack {
@@ -78,7 +79,7 @@ public class SimpleCropPack extends ResourcePack {
   }
 
   @Override
-  public void close() throws IOException {}
+  public void close() {}
 
   /**
    * Gets the resource path for a given resource
@@ -101,11 +102,8 @@ public class SimpleCropPack extends ResourcePack {
 
   /**
    * Implementaton of IPackFinder for the registration event
-   * @param map      Resource pack map
-   * @param factory  Pack info factory
-   * @param <T>      Resource pack info type
    */
-  public static <T extends ResourcePackInfo> void packFinder(Map<String,T> map, ResourcePackInfo.IFactory<T> factory) {
-    map.put(PACK_NAME, ResourcePackInfo.createResourcePack(PACK_NAME, false, ()->INSTANCE, factory, ResourcePackInfo.Priority.TOP));
+  public static void packFinder(Consumer<ResourcePackInfo> infoConsumer, ResourcePackInfo.IFactory factory) {
+    infoConsumer.accept(ResourcePackInfo.createResourcePack(PACK_NAME, false, ()->INSTANCE, factory, ResourcePackInfo.Priority.TOP, IPackNameDecorator.PLAIN));
   }
 }

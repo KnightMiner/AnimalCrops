@@ -11,6 +11,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particles.IParticleData;
 import net.minecraft.particles.ParticleTypes;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.Hand;
 import net.minecraft.util.SoundEvents;
@@ -22,6 +23,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Objects;
 
 public class AnimalPollenItem extends Item {
 
@@ -30,9 +32,9 @@ public class AnimalPollenItem extends Item {
   }
 
   @Override
-  public boolean itemInteractionForEntity(ItemStack stack, PlayerEntity player, LivingEntity entity, Hand hand) {
+  public ActionResultType itemInteractionForEntity(ItemStack stack, PlayerEntity player, LivingEntity entity, Hand hand) {
     EntityType<?> type = entity.getType();
-    String id = type.getRegistryName().toString();
+    String id = Objects.requireNonNull(type.getRegistryName()).toString();
     // check blacklist first, easiest
     if (!Config.pollenBlacklist.get().contains(id)) {
       // next, check which type of entity we are grabbing
@@ -60,13 +62,13 @@ public class AnimalPollenItem extends Item {
             spawnEntityParticles(entity, ParticleTypes.DAMAGE_INDICATOR, 2);
             break;
         }
-        return true;
+        return ActionResultType.SUCCESS;
       }
     }
 
     // tell the player why nothing happened
     player.sendStatusMessage(new TranslationTextComponent(this.getTranslationKey() + ".invalid", type.getName()), true);
-    return true;
+    return ActionResultType.SUCCESS;
   }
 
   /**
@@ -92,6 +94,7 @@ public class AnimalPollenItem extends Item {
   }
 
   /** Valid actions for spores, as set by the config */
+  @SuppressWarnings("unused")
   public enum Action {
     /** Entity is consumed in a cloud of smoke */
     CONSUME,

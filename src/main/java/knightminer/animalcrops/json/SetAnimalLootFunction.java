@@ -3,15 +3,16 @@ package knightminer.animalcrops.json;
 import com.google.common.collect.ImmutableSet;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
+import knightminer.animalcrops.core.Registration;
 import knightminer.animalcrops.core.Utils;
 import net.minecraft.item.ItemStack;
+import net.minecraft.loot.LootContext;
+import net.minecraft.loot.LootFunction;
+import net.minecraft.loot.LootFunctionType;
+import net.minecraft.loot.LootParameter;
+import net.minecraft.loot.LootParameters;
+import net.minecraft.loot.conditions.ILootCondition;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.storage.loot.LootContext;
-import net.minecraft.world.storage.loot.LootFunction;
-import net.minecraft.world.storage.loot.LootParameter;
-import net.minecraft.world.storage.loot.LootParameters;
-import net.minecraft.world.storage.loot.conditions.ILootCondition;
 
 import javax.annotation.Nonnull;
 import java.util.Set;
@@ -36,12 +37,12 @@ public class SetAnimalLootFunction extends LootFunction {
     return ImmutableSet.of(LootParameters.BLOCK_ENTITY);
   }
 
-  public static class Serializer extends LootFunction.Serializer<SetAnimalLootFunction> {
-    public Serializer(ResourceLocation location) {
-      super(location, SetAnimalLootFunction.class);
-    }
+  @Override
+  public LootFunctionType getFunctionType() {
+    return Registration.Loot.setAnimalFunction;
+  }
 
-    @Nonnull
+  public static class Serializer extends LootFunction.Serializer<SetAnimalLootFunction> {
     @Override
     public SetAnimalLootFunction deserialize(@Nonnull JsonObject json, @Nonnull JsonDeserializationContext ctx, @Nonnull ILootCondition[] conditions) {
       return new SetAnimalLootFunction(conditions);

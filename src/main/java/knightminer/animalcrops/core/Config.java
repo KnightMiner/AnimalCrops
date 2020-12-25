@@ -60,7 +60,7 @@ public class Config {
 
 	// grass drops
 	public static BooleanValue dropAnimalPollen;
-	private static ConfigValue<List<? extends String>> dropBlacklist;
+	private static final ConfigValue<List<? extends String>> dropBlacklist;
 	// animal seeds
 	private static List<? extends String> randomAnimalCrops;
 	/** Returns the list of animal crops filtered by the drop blacklist */
@@ -70,7 +70,7 @@ public class Config {
 		}
 		return randomAnimalCrops = handleDropBlacklist(animalCrops);
 	}
-	private static BooleanValue dropAnimalSeeds;
+	private static final BooleanValue dropAnimalSeeds;
 	public static boolean dropAnimalSeeds() {
 		return dropAnimalSeeds.get() && !randomAnimalCrops().isEmpty();
 	}
@@ -83,63 +83,61 @@ public class Config {
 		}
 		return randomAnemonemals = handleDropBlacklist(anemonemals);
 	}
-	private static BooleanValue dropAnemonemals;
+	private static final BooleanValue dropAnemonemals;
 	public static boolean dropAnemonemals() {
 		return dropAnemonemals.get() && !randomAnemonemals().isEmpty();
 	}
 
 	static {
 		BUILDER = new Builder();
-		configure(BUILDER);
-		SPEC = BUILDER.build();
-	}
 
-	private static void configure(Builder builder) {
 		// crop
-		builder.push("crop");
+		BUILDER.push("crop");
 		{
-			canBonemeal = builder
+			canBonemeal = BUILDER
 					.comment("Determines if bonemeal can be applied to the animal crop")
 					.define("bonemeal", false);
-			animalCrops = builder
+			animalCrops = BUILDER
 					.comment("List of animals to add as animal seeds. Must extend MobEntity and have a spawn egg.")
 					.defineList("animalCrops", validateDefaults(ANIMAL_CROP_DEFAULTS), Config::validateAnimal);
-			anemonemals = builder
+			anemonemals = BUILDER
 					.comment("List of water animals to add as water animal crops: anemonemals. Must extend MobEntity and have a spawn egg.")
 					.defineList("anemonemals", validateDefaults(ANIMAL_ANEMONEMAL_DEFAULTS), Config::validateAnimal);
 		}
-		builder.pop();
+		BUILDER.pop();
 
 		// spores
-		builder.push("pollen");
+		Config.BUILDER.push("pollen");
 		{
-			pollenAction = builder
+			pollenAction = BUILDER
 					.comment("If CONSUME, the entity is killed when pollen are used, though no items are dropped",
 					         "If DAMAGE, the entity will take 2 hearts of damage when pollen are used")
 					.defineEnum("action", AnimalPollenItem.Action.DAMAGE);
-			pollenBlacklist = builder
+			pollenBlacklist = BUILDER
 					.comment("Animals that pollen cannot be used on, from either animal crops or anemonemals")
 					.defineList("blacklist", ImmutableList.of(), Config::validateAnimal);
 		}
-		builder.pop();
+		BUILDER.pop();
 
 		// grass drops
-		builder.push("grassDrops");
+		BUILDER.push("grassDrops");
 		{
-			dropAnimalSeeds = builder
+			dropAnimalSeeds = BUILDER
 					.comment("If true, grass will rarely drop a random animal seed")
 					.define("animal_seeds", false);
-			dropAnemonemals = builder
+			dropAnemonemals = BUILDER
 					.comment("If true, sea grass will rarely drop a random anemonemal")
 					.define("anemonemal", false);
-			dropAnimalPollen = builder
+			dropAnimalPollen = BUILDER
 					.comment("If true, grass will rarely drop animal pollen")
 					.define("animal_pollen", true);
-			dropBlacklist = builder
+			dropBlacklist = BUILDER
 					.comment("Animals that will not drop from grass or sea grass, based on the other two lists")
 					.defineList("blacklist", ImmutableList.of(), Config::validateAnimal);
 		}
-		builder.pop();
+		BUILDER.pop();
+
+		SPEC = BUILDER.build();
 	}
 
 	// registered in AnimalCrops

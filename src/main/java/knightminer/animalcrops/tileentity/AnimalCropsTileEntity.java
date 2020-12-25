@@ -15,9 +15,10 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IServerWorld;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class AnimalCropsTileEntity extends TileEntity {
 	/** Tag to use to store the random direction */
@@ -41,10 +42,6 @@ public class AnimalCropsTileEntity extends TileEntity {
 	 * @param entityID  Entity ID to set
 	 */
 	public void setEntity(String entityID) {
-		if(entityID == null) {
-			return;
-		}
-
 		// only set if valid
 		if (!entityValid(entityID)) {
 			return;
@@ -52,6 +49,7 @@ public class AnimalCropsTileEntity extends TileEntity {
 
 		CompoundNBT data = this.getTileData();
 		data.putString(Utils.ENTITY_TAG, entityID);
+		assert world != null;
 		if (!world.isRemote) {
 			data.putInt(TAG_DIRECTION, world.rand.nextInt(4));
 		}
@@ -63,15 +61,18 @@ public class AnimalCropsTileEntity extends TileEntity {
 	 * @param  cacheEntity  If true, pull the entity from the cache and cache the result. Typically only used clientside
 	 * @return  The entity for this crop
 	 */
+	@SuppressWarnings("Convert2MethodRef")
+	@Nullable
 	public MobEntity getEntity(boolean cacheEntity) {
 		if (cacheEntity && entity != null) {
 			return entity;
 		}
 
 		// create the entity from the tile data
+		assert world != null;
 		Entity created = Utils.getEntityID(this.getTileData())
 													.filter(AnimalCropsTileEntity::entityValid)
-													.flatMap(EntityType::byKey)
+													.flatMap(loc -> EntityType.byKey(loc))
 													.map((type) -> type.create(world))
 													.orElse(null);
 		if (created == null) {
@@ -131,7 +132,9 @@ public class AnimalCropsTileEntity extends TileEntity {
 		entity.setPosition(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5);
 
 		// set entity data where relevant
-		entity.onInitialSpawn(world, world.getDifficultyForLocation(new BlockPos(entity)), SpawnReason.SPAWN_EGG, null, null);
+		if (world instanceof IServerWorld) {
+			entity.onInitialSpawn((IServerWorld)world, world.getDifficultyForLocation(entity.getPosition()), SpawnReason.SPAWN_EGG, null, null);
+		}
 
 		// slime sizes should not be bigger than 2
 		if(entity instanceof SlimeEntity) {
@@ -142,6 +145,7 @@ public class AnimalCropsTileEntity extends TileEntity {
 		}
 
 		// spawn
+		assert world != null;
 		entity.setWorld(world);
 		world.addEntity(entity);
 		entity.playAmbientSound();

@@ -1,9 +1,11 @@
 modLoader="javafml" #mandatory
-loaderVersion="[27,)"
+loaderVersion="${loader_range}"
 issueTrackerURL="https://github.com/KnightMiner/AnimalCrops/issues/"
+license="MIT"
+
 [[mods]]
     modId="animalcrops" #mandatory
-    version="${file.jarVersion}"
+    version="${version}"
     displayName="Animal Crops"
     displayURL="https://www.curseforge.com/minecraft/mc-mods/animal-crops"
     logoFile="animalcrops.png"
@@ -16,12 +18,12 @@ issueTrackerURL="https://github.com/KnightMiner/AnimalCrops/issues/"
 [[dependencies.inspirations]]
     modId="forge"
     mandatory=true
-    versionRange="[30.0.19,)"
+    versionRange="${forge_range}"
     ordering="AFTER"
     side="BOTH"
 [[dependencies.inspirations]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.15.1,]"
+    versionRange="${minecraft_range}"
     ordering="NONE"
     side="BOTH"

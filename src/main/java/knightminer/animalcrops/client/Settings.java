@@ -14,12 +14,14 @@ import net.minecraftforge.resource.ISelectiveResourceReloadListener;
 import net.minecraftforge.resource.VanillaResourceType;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -34,7 +36,6 @@ public class Settings implements ISelectiveResourceReloadListener {
 
   // current settings
   private boolean renderCropEntity = true;
-  private boolean renderLilyEntity = true;
   private boolean renderAnemonemalEntity = true;
 
   public static final Settings INSTANCE = new Settings();
@@ -47,7 +48,7 @@ public class Settings implements ISelectiveResourceReloadListener {
       // first, get a list of all json files
       List<JsonObject> jsonFiles;
       try {
-        jsonFiles = manager.getAllResources(LOCATION).stream().map(Settings::getJson).filter((json) -> json != null).collect(Collectors.toList());
+        jsonFiles = manager.getAllResources(LOCATION).stream().map(Settings::getJson).filter(Objects::nonNull).collect(Collectors.toList());
       } catch(IOException e) {
         jsonFiles = Collections.emptyList();
         AnimalCrops.log.error("Failed to load model settings file", e);
@@ -69,6 +70,7 @@ public class Settings implements ISelectiveResourceReloadListener {
    * @param def   Default value
    * @return  Value from top level pack, or null if no pack has it defined
    */
+  @SuppressWarnings("SameParameterValue")
   private static boolean getTopBoolean(@Nonnull List<JsonObject> list, @Nonnull String key, boolean def) {
     // for some reason, getAllResources puts the top most pack at the end of the list, so search in reverse order
     for(int i = list.size() - 1; i >= 0; --i) {
@@ -85,14 +87,14 @@ public class Settings implements ISelectiveResourceReloadListener {
    * @param resource  Resource to read. Closed when done
    * @return  JSON object, or null if failed to parse
    */
+  @Nullable
   private static JsonObject getJson(IResource resource) {
     // this code is heavily based on ResourcePack::getResourceMetadata
     try {
       Throwable thrown = null;
       BufferedReader reader = new BufferedReader(new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8));
       try {
-        JsonObject obj = JSONUtils.fromJson(reader);
-        return obj;
+        return JSONUtils.fromJson(reader);
       } catch (Throwable e) {
         // store this exception in case we throw again
         thrown = e;

@@ -6,7 +6,6 @@ import knightminer.animalcrops.tileentity.AnimalCropsTileEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.SpawnEggItem;
 import net.minecraft.nbt.CompoundNBT;
@@ -19,6 +18,9 @@ import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
+import javax.annotation.Nullable;
+
+@SuppressWarnings("unused")
 public class ClientEvents {
 
 	public ClientEvents() {
@@ -32,7 +34,7 @@ public class ClientEvents {
 	}
 
 	@SubscribeEvent
-	public void registerTER(FMLClientSetupEvent event) {
+	void registerTER(FMLClientSetupEvent event) {
 		// this is bound unconditionally, but no-ops if the pack is disabled
 		ClientRegistry.bindTileEntityRenderer(Registration.cropsTE, RenderAnimalCrops::new);
 
@@ -43,7 +45,7 @@ public class ClientEvents {
 	}
 
 	@SubscribeEvent
-	public void registerBlockColors(ColorHandlerEvent.Block event) {
+	void registerBlockColors(ColorHandlerEvent.Block event) {
 		// registered unconditionally as the resource pack may be added or removed later
 		// besides, does not hurt to have an unused color handler
 		event.getBlockColors().register((state, world, pos, index) -> {
@@ -59,7 +61,7 @@ public class ClientEvents {
 	}
 
 	@SubscribeEvent
-	public void registerItemColors(ColorHandlerEvent.Item event) {
+	void registerItemColors(ColorHandlerEvent.Item event) {
 		event.getItemColors().register((stack, index) -> getEggColor(stack.getTag(), index),
 																	 Registration.seeds, Registration.anemonemalSeeds);
 	}
@@ -73,9 +75,10 @@ public class ClientEvents {
 	 * @param index  Tint index to use
 	 * @return  Egg color for the given tags and index
 	 */
-	private static int getEggColor(CompoundNBT tags, int index) {
+	@SuppressWarnings("Convert2MethodRef")
+	private static int getEggColor(@Nullable CompoundNBT tags, int index) {
 		return Utils.getEntityID(tags)
-								.flatMap(EntityType::byKey)
+								.flatMap(loc -> EntityType.byKey(loc))
 								.map(SpawnEggItem::getEgg)
 								.map((egg)->egg.getColor(index))
 								.orElse(-1);
