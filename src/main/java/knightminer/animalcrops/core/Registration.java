@@ -6,13 +6,13 @@ import knightminer.animalcrops.blocks.AnimalCropsBlock;
 import knightminer.animalcrops.blocks.AnimalShroomBlock;
 import knightminer.animalcrops.items.AnimalPollenItem;
 import knightminer.animalcrops.items.AnimalSeedsItem;
+import knightminer.animalcrops.json.AddEntryLootModifier;
 import knightminer.animalcrops.json.ConfigCondition;
 import knightminer.animalcrops.json.RandomAnimalLootFunction;
 import knightminer.animalcrops.json.SetAnimalLootFunction;
 import knightminer.animalcrops.tileentity.AnimalCropsTileEntity;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
 import net.minecraft.block.ComposterBlock;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
@@ -20,17 +20,13 @@ import net.minecraft.block.material.MaterialColor;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
-import net.minecraft.loot.ConstantRange;
 import net.minecraft.loot.LootConditionType;
 import net.minecraft.loot.LootFunctionType;
-import net.minecraft.loot.LootPool;
-import net.minecraft.loot.LootTable;
-import net.minecraft.loot.TableLootEntry;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.registry.Registry;
-import net.minecraftforge.event.LootTableLoadEvent;
+import net.minecraftforge.common.loot.GlobalLootModifierSerializer;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.RegistryEvent.MissingMappings;
 import net.minecraftforge.event.RegistryEvent.MissingMappings.Mapping;
@@ -43,7 +39,6 @@ import net.minecraftforge.registries.IForgeRegistryEntry;
 import net.minecraftforge.registries.ObjectHolder;
 
 import javax.annotation.Nonnull;
-import java.util.Objects;
 
 @SuppressWarnings("unused")
 @ObjectHolder(AnimalCrops.modID)
@@ -100,6 +95,12 @@ public class Registration {
     register(r, new AnimalPollenItem(props), "pollen");
   }
 
+  @SubscribeEvent
+  static void registerGlobalLootModifiers(RegistryEvent.Register<GlobalLootModifierSerializer<?>> event) {
+    IForgeRegistry<GlobalLootModifierSerializer<?>> r = event.getRegistry();
+    register(r, new AddEntryLootModifier.Serializer(), "add_entry");
+  }
+
   // anything with no register event
   @SubscribeEvent
   static void registerMisc(FMLCommonSetupEvent event) {
@@ -130,17 +131,6 @@ public class Registration {
         mapping.remap(anemonemalSeeds);
       }
     }
-  }
-
-  // registered to FORGE event bus in AnimalCrops
-  public static void injectLoot(LootTableLoadEvent event) {
-    addToBlockLoot(event, Blocks.GRASS);
-    addToBlockLoot(event, Blocks.TALL_GRASS);
-    addToBlockLoot(event, Blocks.FERN);
-    addToBlockLoot(event, Blocks.LARGE_FERN);
-    addToBlockLoot(event, Blocks.SEAGRASS);
-    addToBlockLoot(event, Blocks.TALL_SEAGRASS);
-    addToBlockLoot(event, Blocks.NETHER_SPROUTS);
   }
 
 
@@ -178,24 +168,15 @@ public class Registration {
     registry.register(value);
   }
 
+  /**
+   * Registers a value to a vanilla registry
+   * @param registry  Registry instance
+   * @param name      Name to register
+   * @param value     Value to register
+   * @param <T>       Value type
+   * @return  Registered value
+   */
   private static <T> T register(Registry<? super T> registry, String name, T value) {
     return Registry.register(registry, getResource(name), value);
-  }
-
-  /**
-   * Injects an custom loot pool from animalcrops:blocks/minecraft/ into the vanilla block
-   * @param event  Event, used to determine if this is the proper loot table
-   * @param block  Block to inject loot into
-   */
-  private static void addToBlockLoot(LootTableLoadEvent event, Block block) {
-    String name = Objects.requireNonNull(block.getRegistryName()).getPath();
-    if (!event.getName().getNamespace().equals("minecraft") || !event.getName().getPath().equals("blocks/" + name)) {
-      return;
-    }
-    LootTable table = event.getTable();
-    if (table != LootTable.EMPTY_LOOT_TABLE) {
-      ResourceLocation location = getResource("blocks/minecraft/" + name);
-      table.addPool(new LootPool.Builder().name(location.toString()).rolls(ConstantRange.of(1)).addEntry(TableLootEntry.builder(location)).build());
-    }
   }
 }
