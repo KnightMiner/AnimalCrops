@@ -42,6 +42,8 @@ public class ClientEvents {
 		RenderType cutout = RenderType.getCutout();
 		RenderTypeLookup.setRenderLayer(Registration.crops, cutout);
 		RenderTypeLookup.setRenderLayer(Registration.anemonemal, cutout);
+		RenderTypeLookup.setRenderLayer(Registration.shrooms, cutout);
+		RenderTypeLookup.setRenderLayer(Registration.magnemone, cutout);
 	}
 
 	@SubscribeEvent
@@ -57,13 +59,13 @@ public class ClientEvents {
 				return getEggColor(te.getTileData(), index);
 			}
 			return -1;
-		}, Registration.crops, Registration.anemonemal);
+		}, Registration.crops, Registration.anemonemal, Registration.shrooms, Registration.magnemone);
 	}
 
 	@SubscribeEvent
 	void registerItemColors(ColorHandlerEvent.Item event) {
 		event.getItemColors().register((stack, index) -> getEggColor(stack.getTag(), index),
-																	 Registration.seeds, Registration.anemonemalSeeds);
+																	 Registration.seeds, Registration.anemonemalSeeds, Registration.shrooms, Registration.magnemone);
 	}
 
 

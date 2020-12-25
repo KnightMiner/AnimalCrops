@@ -23,9 +23,10 @@ public class AnimalCrops {
 	public static final String modID = "animalcrops";
 	public static final Logger log = LogManager.getLogger(modID);
 	public static final IOptionalNamedTag<Block> CROP_SOIL = BlockTags.createOptional(Registration.getResource("crops_soil"));
+	public static final IOptionalNamedTag<Block> SHROOM_SOIL = BlockTags.createOptional(Registration.getResource("shroom_soil"));
 
 	public AnimalCrops() {
-		DistExecutor.callWhenOn(Dist.CLIENT, ()->ClientEvents::new);
+		DistExecutor.unsafeCallWhenOn(Dist.CLIENT, ()->ClientEvents::new);
 		Utils.initReflection();
 
 		ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, Config.SPEC);

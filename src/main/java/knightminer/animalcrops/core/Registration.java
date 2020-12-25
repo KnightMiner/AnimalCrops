@@ -3,17 +3,21 @@ package knightminer.animalcrops.core;
 import knightminer.animalcrops.AnimalCrops;
 import knightminer.animalcrops.blocks.AnemonemalBlock;
 import knightminer.animalcrops.blocks.AnimalCropsBlock;
+import knightminer.animalcrops.blocks.AnimalShroomBlock;
 import knightminer.animalcrops.items.AnimalPollenItem;
 import knightminer.animalcrops.items.AnimalSeedsItem;
 import knightminer.animalcrops.json.ConfigCondition;
 import knightminer.animalcrops.json.RandomAnimalLootFunction;
 import knightminer.animalcrops.json.SetAnimalLootFunction;
 import knightminer.animalcrops.tileentity.AnimalCropsTileEntity;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ComposterBlock;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.material.MaterialColor;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.loot.ConstantRange;
@@ -22,6 +26,7 @@ import net.minecraft.loot.LootFunctionType;
 import net.minecraft.loot.LootPool;
 import net.minecraft.loot.LootTable;
 import net.minecraft.loot.TableLootEntry;
+import net.minecraft.tags.FluidTags;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.registry.Registry;
@@ -44,10 +49,14 @@ import java.util.Objects;
 @ObjectHolder(AnimalCrops.modID)
 @EventBusSubscriber(modid = AnimalCrops.modID, bus = Bus.MOD)
 public class Registration {
-  public static final Block crops = injected(), anemonemal = injected();
-  public static final AnimalSeedsItem seeds = injected();
+  public static final Block crops = injected(), anemonemal = injected(), shrooms = injected(), magnemone = injected();
+
+  public static final AnimalSeedsItem seeds = injected(), spores = injected();
   @ObjectHolder("anemonemal")
   public static final AnimalSeedsItem anemonemalSeeds = injected();
+  @ObjectHolder("magnemone")
+  public static final AnimalSeedsItem magnemoneSpores = injected();
+
   public static final Item pollen = injected();
   @ObjectHolder("crops")
   public static final TileEntityType<AnimalCropsTileEntity> cropsTE = injected();
@@ -63,9 +72,12 @@ public class Registration {
   static void registerBlocks(RegistryEvent.Register<Block> event) {
     IForgeRegistry<Block> r = event.getRegistry();
 
-    Block.Properties props = Block.Properties.create(Material.PLANTS).tickRandomly().hardnessAndResistance(0).sound(SoundType.CROP).doesNotBlockMovement();
-    register(r, new AnimalCropsBlock(props, Config.animalCrops::get), "crops");
-    register(r, new AnemonemalBlock(props, Config.anemonemals::get), "anemonemal");
+    AbstractBlock.Properties props = AbstractBlock.Properties.create(Material.PLANTS).tickRandomly().hardnessAndResistance(0).sound(SoundType.CROP).doesNotBlockMovement();
+    register(r, new AnimalCropsBlock(props, Config.animalCrops), "crops");
+    register(r, new AnemonemalBlock(props, Config.anemonemals, () -> Fluids.WATER, FluidTags.WATER), "anemonemal");
+    props = AbstractBlock.Properties.create(Material.PLANTS, MaterialColor.RED).tickRandomly().hardnessAndResistance(0).sound(SoundType.NETHER_WART).doesNotBlockMovement();
+    register(r, new AnimalShroomBlock(props, Config.animalShrooms), "shrooms");
+    register(r, new AnemonemalBlock(props, Config.magnemones, () -> Fluids.LAVA, FluidTags.LAVA), "magnemone");
   }
 
   @SubscribeEvent
@@ -73,7 +85,7 @@ public class Registration {
     IForgeRegistry<TileEntityType<?>> r = event.getRegistry();
 
     //noinspection ConstantConditions
-    register(r, TileEntityType.Builder.create(AnimalCropsTileEntity::new, crops, anemonemal).build(null), "crops");
+    register(r, TileEntityType.Builder.create(AnimalCropsTileEntity::new, crops, anemonemal, shrooms, magnemone).build(null), "crops");
   }
 
   @SubscribeEvent
@@ -83,6 +95,8 @@ public class Registration {
 
     register(r, new AnimalSeedsItem(crops, props), "seeds");
     register(r, new AnimalSeedsItem(anemonemal, props), "anemonemal");
+    register(r, new AnimalSeedsItem(shrooms, props), "spores");
+    register(r, new AnimalSeedsItem(magnemone, props), "magnemone");
     register(r, new AnimalPollenItem(props), "pollen");
   }
 
@@ -91,6 +105,8 @@ public class Registration {
   static void registerMisc(FMLCommonSetupEvent event) {
     ComposterBlock.registerCompostable(0.5f, seeds);
     ComposterBlock.registerCompostable(0.5f, anemonemalSeeds);
+    ComposterBlock.registerCompostable(0.5f, spores);
+    ComposterBlock.registerCompostable(0.5f, magnemoneSpores);
     ComposterBlock.registerCompostable(0.5f, pollen);
 
     Loot.setAnimalFunction = register(Registry.LOOT_FUNCTION_TYPE, "set_animal", new LootFunctionType(new SetAnimalLootFunction.Serializer()));
@@ -124,6 +140,7 @@ public class Registration {
     addToBlockLoot(event, Blocks.LARGE_FERN);
     addToBlockLoot(event, Blocks.SEAGRASS);
     addToBlockLoot(event, Blocks.TALL_SEAGRASS);
+    addToBlockLoot(event, Blocks.NETHER_SPROUTS);
   }
 
 

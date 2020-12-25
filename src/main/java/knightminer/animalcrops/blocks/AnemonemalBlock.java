@@ -5,11 +5,11 @@ import knightminer.animalcrops.items.AnimalSeedsItem;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ILiquidContainer;
+import net.minecraft.fluid.FlowingFluid;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
-import net.minecraft.fluid.Fluids;
 import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.tags.FluidTags;
+import net.minecraft.tags.ITag;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
@@ -19,9 +19,16 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Supplier;
 
+/**
+ * Common logic for water and lava crops
+ */
 public class AnemonemalBlock extends AnimalCropsBlock implements ILiquidContainer {
-  public AnemonemalBlock(Properties props, Supplier<List<? extends String>> animals) {
+  private final Supplier<? extends FlowingFluid> fluid;
+  private final ITag<Fluid> tag;
+  public AnemonemalBlock(Properties props, Supplier<List<? extends String>> animals, Supplier<FlowingFluid> fluid, ITag<Fluid> tag) {
     super(props, animals);
+    this.fluid = fluid;
+    this.tag = tag;
   }
 
   @Override
@@ -38,16 +45,17 @@ public class AnemonemalBlock extends AnimalCropsBlock implements ILiquidContaine
   @Nullable
   public BlockState getStateForPlacement(BlockItemUseContext context) {
     FluidState fluid = context.getWorld().getFluidState(context.getPos());
-    return fluid.isTagged(FluidTags.WATER) && fluid.getLevel() == 8 ? super.getStateForPlacement(context) : null;
+    return fluid.isTagged(tag) && fluid.getLevel() == 8 ? super.getStateForPlacement(context) : null;
   }
 
-  /* Water logic */
+  /* Fluid logic */
 
   @Override
   public BlockState updatePostPlacement(BlockState stateIn, Direction facing, BlockState facingState, IWorld world, BlockPos currentPos, BlockPos facingPos) {
     BlockState state = super.updatePostPlacement(stateIn, facing, facingState, world, currentPos, facingPos);
     if (!state.isAir(world, currentPos)) {
-      world.getPendingFluidTicks().scheduleTick(currentPos, Fluids.WATER, Fluids.WATER.getTickRate(world));
+      Fluid fluid = this.fluid.get();
+      world.getPendingFluidTicks().scheduleTick(currentPos, fluid, fluid.getTickRate(world));
     }
 
     return state;
@@ -57,7 +65,7 @@ public class AnemonemalBlock extends AnimalCropsBlock implements ILiquidContaine
   @Deprecated
   @Override
   public FluidState getFluidState(BlockState state) {
-    return Fluids.WATER.getStillFluidState(false);
+    return fluid.get().getStillFluidState(false);
   }
 
   @Override

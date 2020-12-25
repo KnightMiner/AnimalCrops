@@ -23,5 +23,7 @@ public class JEIPlugin implements IModPlugin {
 
 		registry.registerSubtypeInterpreter(Registration.seeds, interpreter);
 		registry.registerSubtypeInterpreter(Registration.anemonemalSeeds, interpreter);
+		registry.registerSubtypeInterpreter(Registration.spores, interpreter);
+		registry.registerSubtypeInterpreter(Registration.magnemoneSpores, interpreter);
 	}
 }

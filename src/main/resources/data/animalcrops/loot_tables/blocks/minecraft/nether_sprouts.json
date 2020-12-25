@@ -1,0 +1,65 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "name": "animalcrops:extra_sprout_drops",
+      "conditions": [
+        {
+          "condition": "animalcrops:config",
+          "prop": "shrooms"
+        },
+        { "condition": "minecraft:survives_explosion" },
+        {
+          "condition": "minecraft:inverted",
+          "term": {
+            "condition": "minecraft:match_tool",
+            "predicate": { "item": "minecraft:shears" }
+          }
+        },
+        {
+          "condition": "minecraft:random_chance",
+          "chance": 0.015
+        }
+      ],
+      "rolls": 1,
+      "entries": [{
+        "type": "minecraft:item",
+        "name": "animalcrops:spores"
+      }],
+      "functions": [{
+        "function": "animalcrops:random_animal",
+        "type": "shrooms"
+      }]
+    },
+    {
+      "name": "animalcrops:extra_sprout_drops_lava",
+      "conditions": [
+        {
+          "condition": "animalcrops:config",
+          "prop": "magnemone"
+        },
+        { "condition": "minecraft:survives_explosion" },
+        {
+          "condition": "minecraft:inverted",
+          "term": {
+            "condition": "minecraft:match_tool",
+            "predicate": { "item": "minecraft:shears" }
+          }
+        },
+        {
+          "condition": "minecraft:random_chance",
+          "chance": 0.015
+        }
+      ],
+      "rolls": 1,
+      "entries": [{
+        "type": "minecraft:item",
+        "name": "animalcrops:magnemone"
+      }],
+      "functions": [{
+        "function": "animalcrops:random_animal",
+        "type": "magnemone"
+      }]
+    }
+  ]
+}

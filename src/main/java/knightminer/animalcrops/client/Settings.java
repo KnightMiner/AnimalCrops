@@ -29,14 +29,17 @@ public class Settings implements ISelectiveResourceReloadListener {
 
   /** Location of the settings file */
   private static final ResourceLocation LOCATION = new ResourceLocation(AnimalCrops.modID, "models/settings.json");
-  /** JSON key for the crop property */
+  /** JSON key for the properties */
   private static final String CROP_ENTITY_KEY = "render_crop_entity";
-  /** JSON key for the anemonemal property */
   private static final String ANEMONEMAL_ENTITY_KEY = "render_anemonemal_entity";
+  private static final String SHROOM_ENTITY_KEY = "render_shroom_entity";
+  private static final String MAGNEMONE_ENTITY_KEY = "render_magnemone_entity";
 
   // current settings
   private boolean renderCropEntity = true;
   private boolean renderAnemonemalEntity = true;
+  private boolean renderShroomEntity = true;
+  private boolean renderMagnemoneEntity = true;
 
   public static final Settings INSTANCE = new Settings();
   private Settings() {}
@@ -57,6 +60,8 @@ public class Settings implements ISelectiveResourceReloadListener {
       // then grab the relevant settings values from the booleans
       renderCropEntity       = getTopBoolean(jsonFiles, CROP_ENTITY_KEY, true);
       renderAnemonemalEntity = getTopBoolean(jsonFiles, ANEMONEMAL_ENTITY_KEY, true);
+      renderShroomEntity     = getTopBoolean(jsonFiles, SHROOM_ENTITY_KEY, true);
+      renderMagnemoneEntity  = getTopBoolean(jsonFiles, MAGNEMONE_ENTITY_KEY, true);
     }
   }
 
@@ -131,6 +136,12 @@ public class Settings implements ISelectiveResourceReloadListener {
     }
     if (block == Registration.anemonemal) {
       return INSTANCE.renderAnemonemalEntity;
+    }
+    if (block == Registration.shrooms) {
+      return INSTANCE.renderShroomEntity;
+    }
+    if (block == Registration.magnemone) {
+      return INSTANCE.renderMagnemoneEntity;
     }
     // fallback in case some other mod extends this
     return true;

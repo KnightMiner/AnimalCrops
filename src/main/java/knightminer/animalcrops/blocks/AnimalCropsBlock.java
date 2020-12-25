@@ -19,15 +19,17 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
+import net.minecraftforge.common.PlantType;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Supplier;
 
+/**
+ * Base crop logic, used for plains crops directly
+ */
 public class AnimalCropsBlock extends CropsBlock {
-
 	protected final Supplier<List<? extends String>> animals;
 	public AnimalCropsBlock(Properties props, Supplier<List<? extends String>> animals) {
 		super(props);
@@ -35,6 +37,11 @@ public class AnimalCropsBlock extends CropsBlock {
 	}
 
 	/* Crop properties */
+
+	@Override
+	public PlantType getPlantType(IBlockReader world, BlockPos pos) {
+		return PlantType.PLAINS;
+	}
 
 	@Override
 	protected boolean isValidGround(BlockState state, IBlockReader worldIn, BlockPos pos) {
@@ -57,7 +64,6 @@ public class AnimalCropsBlock extends CropsBlock {
 		return true;
 	}
 
-	@Nonnull
 	@Override
 	public TileEntity createTileEntity(BlockState state, IBlockReader world) {
 		return new AnimalCropsTileEntity();

@@ -7,6 +7,7 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSyntaxException;
 import knightminer.animalcrops.AnimalCrops;
 import knightminer.animalcrops.core.Config;
+import knightminer.animalcrops.core.Config.AnimalCropType;
 import knightminer.animalcrops.core.Registration;
 import knightminer.animalcrops.core.Utils;
 import net.minecraft.item.ItemStack;
@@ -23,22 +24,21 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Supplier;
 
 public class RandomAnimalLootFunction extends LootFunction {
-  private static final Map<String,Supplier<List<? extends String>>> TYPES = new HashMap<>();
+  private static final Map<String,AnimalCropType> TYPES = new HashMap<>();
 
   private final String type;
-  private final Supplier<List<? extends String>> supplier;
-  protected RandomAnimalLootFunction(ILootCondition[] conditions, String type, Supplier<List<? extends String>> supplier) {
+  private final AnimalCropType animalType;
+  protected RandomAnimalLootFunction(ILootCondition[] conditions, String type, AnimalCropType animalType) {
     super(conditions);
     this.type = type;
-    this.supplier = supplier;
+    this.animalType = animalType;
   }
 
   @Override
   protected ItemStack doApply(ItemStack stack, LootContext context) {
-    List<? extends String> list = supplier.get();
+    List<? extends String> list = animalType.getRandomDrops();
     // prevent crash if empty, the config condition should handle this though
     if (list.isEmpty()) {
       AnimalCrops.log.error("Received empty animal list for {}, a condition is missing in the loot table", type);
@@ -71,17 +71,19 @@ public class RandomAnimalLootFunction extends LootFunction {
     @Override
     public RandomAnimalLootFunction deserialize(@Nonnull JsonObject json, @Nonnull JsonDeserializationContext ctx, @Nonnull ILootCondition[] conditions) {
       String type = JSONUtils.getString(json, "type").toLowerCase(Locale.ROOT);
-      Supplier<List<? extends String>> supplier = TYPES.get(type);
-      if (supplier == null) {
+      AnimalCropType animalCropType = TYPES.get(type);
+      if (animalCropType == null) {
         throw new JsonSyntaxException("Invalid animal type '" + type + "'");
       }
-      return new RandomAnimalLootFunction(conditions, type, supplier);
+      return new RandomAnimalLootFunction(conditions, type, animalCropType);
     }
   }
 
   /* Setup prop list */
   static {
-    TYPES.put("crops", Config::randomAnimalCrops);
-    TYPES.put("anemonemal", Config::randomAnemonemals);
+    TYPES.put("crops", Config.animalCrops);
+    TYPES.put("anemonemal", Config.anemonemals);
+    TYPES.put("shrooms", Config.animalShrooms);
+    TYPES.put("magnemone", Config.magnemones);
   }
 }

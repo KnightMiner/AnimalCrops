@@ -1,0 +1,12 @@
+{
+  "variants": {
+    "age=0": { "model": "animalcrops:block/shrooms/0" },
+    "age=1": { "model": "animalcrops:block/shrooms/1" },
+    "age=2": { "model": "animalcrops:block/shrooms/2" },
+    "age=3": { "model": "animalcrops:block/shrooms/3" },
+    "age=4": { "model": "animalcrops:block/shrooms/4" },
+    "age=5": { "model": "animalcrops:block/shrooms/5" },
+    "age=6": { "model": "animalcrops:block/shrooms/6" },
+    "age=7": { "model": "animalcrops:block/shrooms/7" }
+  }
+}

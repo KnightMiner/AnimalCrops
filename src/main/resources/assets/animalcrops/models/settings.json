@@ -2,5 +2,9 @@
   "__comment": "If set to true, animal crops will render an entity model for the growing entity",
   "render_crop_entity": true,
   "__comment": "If set to true, anemonemals will render an entity model for the growing entity",
-  "render_anemonemals_entity": true
+  "render_anemonemals_entity": true,
+  "__comment": "If set to true, animal shrooms will render an entity model for the growing entity",
+  "render_shroom_entity": true,
+  "__comment": "If set to true, magnemones will render an entity model for the growing entity",
+  "render_magnemone_entity": true
 }

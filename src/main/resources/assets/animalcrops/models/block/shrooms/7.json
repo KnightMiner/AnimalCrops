@@ -1,0 +1,6 @@
+{
+  "parent": "animalcrops:block/shrooms/base",
+  "textures": {
+    "crop": "animalcrops:block/shrooms_7"
+  }
+}

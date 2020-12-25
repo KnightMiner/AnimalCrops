@@ -184,6 +184,6 @@ public class AnimalCropsTileEntity extends TileEntity {
 	 * @return  True if the ID is valid, false otherwise
 	 */
 	private static boolean entityValid(String entityID) {
-		return Config.animalCrops.get().contains(entityID) || Config.anemonemals.get().contains(entityID);
+		return Config.allCropTypes.stream().anyMatch(type -> type.get().contains(entityID));
 	}
 }
