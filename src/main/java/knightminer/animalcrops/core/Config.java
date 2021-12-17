@@ -3,14 +3,16 @@ package knightminer.animalcrops.core;
 import com.google.common.collect.ImmutableList;
 import knightminer.animalcrops.AnimalCrops;
 import knightminer.animalcrops.items.AnimalPollenItem;
-import net.minecraft.entity.EntityType;
-import net.minecraft.item.SpawnEggItem;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.SpawnEggItem;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.ForgeConfigSpec.BooleanValue;
 import net.minecraftforge.common.ForgeConfigSpec.Builder;
 import net.minecraftforge.common.ForgeConfigSpec.ConfigValue;
 import net.minecraftforge.common.ForgeConfigSpec.EnumValue;
+import net.minecraftforge.common.ForgeSpawnEggItem;
 import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.event.config.ModConfigEvent;
 
 import java.util.List;
 import java.util.function.Supplier;
@@ -141,7 +143,7 @@ public class Config {
 	}
 
 	// registered in AnimalCrops
-	public static void configChanged(final ModConfig.Reloading event) {
+	public static void configChanged(final ModConfigEvent.Reloading event) {
 		if (event.getConfig().getType() == ModConfig.Type.SERVER) {
 			allCropTypes.forEach(AnimalCropType::clearCache);
 		}
@@ -162,20 +164,19 @@ public class Config {
 	 * @return  Validates the entity ID is available
 	 */
 	private static boolean validateAnimal(Object obj) {
-		if (!(obj instanceof String)) {
+		if (!(obj instanceof String animal)) {
 			return false;
 		}
 
 		// must be a valid entity
-		String animal = (String)obj;
-		EntityType<?> type = EntityType.byKey(animal).orElse(null);
+		EntityType<?> type = EntityType.byString(animal).orElse(null);
 		if (type == null) {
 			AnimalCrops.log.error("Invalid entity {}, cannot find entity", animal);
 			return false;
 		}
 
 		// must have a spawn egg, use that for colors
-		SpawnEggItem item = Utils.getEgg(type);
+		SpawnEggItem item = ForgeSpawnEggItem.fromEntityType(type);
 		if(item == null) {
 			AnimalCrops.log.error("Invalid entity {}, must have a spawn egg", animal);
 			return false;
@@ -184,6 +185,7 @@ public class Config {
 		return true;
 	}
 
+	/** Config setup for each type of animal crops */
 	public static class AnimalCropType implements Supplier<List<? extends String>> {
 		private final ConfigValue<List<? extends String>> types;
 		private List<? extends String> randomDrops;

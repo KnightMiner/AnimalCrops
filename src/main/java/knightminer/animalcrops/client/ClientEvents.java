@@ -2,19 +2,18 @@ package knightminer.animalcrops.client;
 
 import knightminer.animalcrops.core.Registration;
 import knightminer.animalcrops.core.Utils;
-import knightminer.animalcrops.tileentity.AnimalCropsTileEntity;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.RenderTypeLookup;
-import net.minecraft.entity.EntityType;
-import net.minecraft.item.SpawnEggItem;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.resources.IReloadableResourceManager;
-import net.minecraft.resources.IResourceManager;
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.packs.resources.ReloadableResourceManager;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.client.event.ColorHandlerEvent;
+import net.minecraftforge.common.ForgeSpawnEggItem;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
@@ -25,25 +24,24 @@ public class ClientEvents {
 
 	public ClientEvents() {
 		FMLJavaModLoadingContext.get().getModEventBus().register(this);
-		Minecraft.getInstance().getResourcePackList().addPackFinder(SimpleCropPack::packFinder);
-
-		IResourceManager manager = Minecraft.getInstance().getResourceManager();
-		if (manager instanceof IReloadableResourceManager) {
-			((IReloadableResourceManager)manager).addReloadListener(Settings.INSTANCE);
+		Minecraft.getInstance().getResourcePackRepository().addPackFinder(SimpleCropPack.INSTANCE);
+		ResourceManager manager = Minecraft.getInstance().getResourceManager();
+		if (manager instanceof ReloadableResourceManager reloadable) {
+			reloadable.registerReloadListener(Settings.INSTANCE);
 		}
 	}
 
 	@SubscribeEvent
 	void registerTER(FMLClientSetupEvent event) {
 		// this is bound unconditionally, but no-ops if the pack is disabled
-		ClientRegistry.bindTileEntityRenderer(Registration.cropsTE, RenderAnimalCrops::new);
+		BlockEntityRenderers.register(Registration.cropsTE, RenderAnimalCrops::new);
 
 		// set render types to cutout
-		RenderType cutout = RenderType.getCutout();
-		RenderTypeLookup.setRenderLayer(Registration.crops, cutout);
-		RenderTypeLookup.setRenderLayer(Registration.anemonemal, cutout);
-		RenderTypeLookup.setRenderLayer(Registration.shrooms, cutout);
-		RenderTypeLookup.setRenderLayer(Registration.magnemone, cutout);
+		RenderType cutout = RenderType.cutout();
+		ItemBlockRenderTypes.setRenderLayer(Registration.crops, cutout);
+		ItemBlockRenderTypes.setRenderLayer(Registration.anemonemal, cutout);
+		ItemBlockRenderTypes.setRenderLayer(Registration.shrooms, cutout);
+		ItemBlockRenderTypes.setRenderLayer(Registration.magnemone, cutout);
 	}
 
 	@SubscribeEvent
@@ -54,8 +52,8 @@ public class ClientEvents {
 			if (world == null || pos == null) {
 				return -1;
 			}
-			TileEntity te = world.getTileEntity(pos);
-			if(te instanceof AnimalCropsTileEntity) {
+			BlockEntity te = world.getBlockEntity(pos);
+			if (te != null) {
 				return getEggColor(te.getTileData(), index);
 			}
 			return -1;
@@ -78,11 +76,11 @@ public class ClientEvents {
 	 * @return  Egg color for the given tags and index
 	 */
 	@SuppressWarnings("Convert2MethodRef")
-	private static int getEggColor(@Nullable CompoundNBT tags, int index) {
+	private static int getEggColor(@Nullable CompoundTag tags, int index) {
 		return Utils.getEntityID(tags)
-								.flatMap(loc -> EntityType.byKey(loc))
-								.map(SpawnEggItem::getEgg)
-								.map((egg)->egg.getColor(index))
+								.flatMap(loc -> EntityType.byString(loc))
+								.map(ForgeSpawnEggItem::fromEntityType)
+								.map(egg->egg.getColor(index))
 								.orElse(-1);
 	}
 }

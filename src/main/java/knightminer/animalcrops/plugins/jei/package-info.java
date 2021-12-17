@@ -2,6 +2,6 @@
 @MethodsReturnNonnullByDefault
 package knightminer.animalcrops.plugins.jei;
 
-import mcp.MethodsReturnNonnullByDefault;
+import net.minecraft.MethodsReturnNonnullByDefault;
 
 import javax.annotation.ParametersAreNonnullByDefault;

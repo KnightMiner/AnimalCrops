@@ -3,12 +3,12 @@ package knightminer.animalcrops.blocks;
 import knightminer.animalcrops.AnimalCrops;
 import knightminer.animalcrops.core.Registration;
 import knightminer.animalcrops.items.AnimalSeedsItem;
-import net.minecraft.block.BlockState;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IWorldReader;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.PlantType;
 
@@ -24,39 +24,40 @@ public class AnimalShroomBlock extends AnimalCropsBlock {
 		super(props, animals);
 	}
 
+
 	@Override
-	protected boolean isValidGround(BlockState state, IBlockReader worldIn, BlockPos pos) {
-		return state.isIn(AnimalCrops.SHROOM_SOIL);
+	protected boolean mayPlaceOn(BlockState state, BlockGetter worldIn, BlockPos pos) {
+		return state.is(AnimalCrops.SHROOM_SOIL);
 	}
 
 	@Override
-	public PlantType getPlantType(IBlockReader world, BlockPos pos) {
+	public PlantType getPlantType(BlockGetter world, BlockPos pos) {
 		return PlantType.NETHER;
 	}
 
 	// override to remove light check
 	@Override
-	public boolean isValidPosition(BlockState state, IWorldReader worldIn, BlockPos pos) {
-		BlockPos down = pos.down();
+	public boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
+		BlockPos down = pos.below();
+		BlockState below = level.getBlockState(down);
 		if (state.getBlock() == this) {
-			return worldIn.getBlockState(down).canSustainPlant(worldIn, down, Direction.UP, this);
+			return below.canSustainPlant(level, down, Direction.UP, this);
 		}
-		return this.isValidGround(worldIn.getBlockState(down), worldIn, down);
+		return this.mayPlaceOn(below, level, down);
 	}
 
 	@Override
 	protected AnimalSeedsItem getSeed() {
-		// TODO
 		return Registration.seeds;
 	}
 
 	@Override
-	public void randomTick(BlockState state, ServerWorld worldIn, BlockPos pos, Random random) {
+	public void randomTick(BlockState state, ServerLevel level, BlockPos pos, Random random) {
 		int i = this.getAge(state);
-		if (i < this.getMaxAge() && ForgeHooks.onCropsGrowPre(worldIn, pos, state, random.nextInt(10) == 0)) {
-			state = state.with(AGE, i + 1);
-			worldIn.setBlockState(pos, state, 2);
-			ForgeHooks.onCropsGrowPost(worldIn, pos, state);
+		if (i < this.getMaxAge() && ForgeHooks.onCropsGrowPre(level, pos, state, random.nextInt(10) == 0)) {
+			state = state.setValue(AGE, i + 1);
+			level.setBlock(pos, state, 2);
+			ForgeHooks.onCropsGrowPost(level, pos, state);
 		}
 	}
 }

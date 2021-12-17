@@ -1,24 +1,25 @@
 package knightminer.animalcrops.blocks;
 
 import knightminer.animalcrops.AnimalCrops;
+import knightminer.animalcrops.blocks.entity.AnimalCropsBlockEntity;
 import knightminer.animalcrops.core.Config;
 import knightminer.animalcrops.core.Registration;
 import knightminer.animalcrops.core.Utils;
 import knightminer.animalcrops.items.AnimalSeedsItem;
-import knightminer.animalcrops.tileentity.AnimalCropsTileEntity;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.CropsBlock;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.NonNullList;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.CropBlock;
+import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.common.PlantType;
 
 import javax.annotation.Nullable;
@@ -29,7 +30,7 @@ import java.util.function.Supplier;
 /**
  * Base crop logic, used for plains crops directly
  */
-public class AnimalCropsBlock extends CropsBlock {
+public class AnimalCropsBlock extends CropBlock implements EntityBlock {
 	protected final Supplier<List<? extends String>> animals;
 	public AnimalCropsBlock(Properties props, Supplier<List<? extends String>> animals) {
 		super(props);
@@ -39,14 +40,15 @@ public class AnimalCropsBlock extends CropsBlock {
 	/* Crop properties */
 
 	@Override
-	public PlantType getPlantType(IBlockReader world, BlockPos pos) {
+	public PlantType getPlantType(BlockGetter world, BlockPos pos) {
 		return PlantType.PLAINS;
 	}
 
 	@Override
-	protected boolean isValidGround(BlockState state, IBlockReader worldIn, BlockPos pos) {
-		return state.isIn(AnimalCrops.CROP_SOIL);
+	protected boolean mayPlaceOn(BlockState state, BlockGetter worldIn, BlockPos pos) {
+		return state.is(AnimalCrops.CROP_SOIL);
 	}
+
 
 	/**
 	 * Gets the seed item for this crop
@@ -60,61 +62,55 @@ public class AnimalCropsBlock extends CropsBlock {
 	/* Seed logic */
 
 	@Override
-	public boolean hasTileEntity(BlockState state) {
-		return true;
+	public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+		return new AnimalCropsBlockEntity(pos, state);
 	}
 
 	@Override
-	public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-		return new AnimalCropsTileEntity();
-	}
-
-	@Override
-	public void onBlockPlacedBy(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
+	public void setPlacedBy(Level world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
 		// set the crop's entity
-		TileEntity te = world.getTileEntity(pos);
-		if(te instanceof AnimalCropsTileEntity) {
-			Utils.getEntityID(stack.getTag()).ifPresent(((AnimalCropsTileEntity)te)::setEntity);
+		BlockEntity be = world.getBlockEntity(pos);
+		if (be instanceof AnimalCropsBlockEntity animal) {
+			Utils.getEntityID(stack.getTag()).ifPresent(animal::setEntity);
 		}
 	}
 
 	@SuppressWarnings("deprecation")
 	@Deprecated
 	@Override
-	public void onReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
+	public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
 		// if the block changed, spawn the animal
-		if(state.getBlock() != newState.getBlock()) {
+		if (state.getBlock() != newState.getBlock()) {
 			// assuming we have the tile entity to use
-			TileEntity te = world.getTileEntity(pos);
-			if(te instanceof AnimalCropsTileEntity) {
-				if(getAge(state) >= getMaxAge()) {
-					((AnimalCropsTileEntity)te).spawnAnimal();
+			if (getAge(state) >= getMaxAge()) {
+				BlockEntity be = level.getBlockEntity(pos);
+				if (be instanceof AnimalCropsBlockEntity animal) {
+					animal.spawnAnimal();
 				}
 			}
-
-			super.onReplaced(state, world, pos, newState, isMoving);
+			super.onRemove(state, level, pos, newState, isMoving);
 			// otherwise, if the age lowered from max, spawn the animal
 			// for right click harvest
-		} else if(state.getBlock() == this && getAge(state) >= getMaxAge() && getAge(newState) < getMaxAge()) {
-			TileEntity te = world.getTileEntity(pos);
-			if(te instanceof AnimalCropsTileEntity) {
-				((AnimalCropsTileEntity)te).spawnAnimal();
+		} else if (state.getBlock() == this && getAge(state) >= getMaxAge() && getAge(newState) < getMaxAge()) {
+			BlockEntity be = level.getBlockEntity(pos);
+			if (be instanceof AnimalCropsBlockEntity animal) {
+				animal.spawnAnimal();
 			}
 		}
 	}
 
 	@Override
-	public ItemStack getPickBlock(BlockState state, RayTraceResult target, IBlockReader world, BlockPos pos, PlayerEntity player) {
-		TileEntity te = world.getTileEntity(pos);
+	public ItemStack getCloneItemStack(BlockState state, HitResult target, BlockGetter level, BlockPos pos, Player player) {
+		BlockEntity te = level.getBlockEntity(pos);
 		ItemStack stack = new ItemStack(getSeed());
 		if(te != null) {
-			Utils.getEntityID(te.getTileData()).ifPresent((id)->Utils.setEntityId(stack, id));
+			Utils.getEntityID(te.getTileData()).ifPresent(id->Utils.setEntityId(stack, id));
 		}
 		return stack;
 	}
 
 	@Override
-	public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
+	public void fillItemCategory(CreativeModeTab tag, NonNullList<ItemStack> items) {
 		for (String id : animals.get()) {
 			items.add(Utils.setEntityId(new ItemStack(this), id));
 		}
@@ -124,12 +120,12 @@ public class AnimalCropsBlock extends CropsBlock {
 	/* Bonemeal */
 
 	@Override
-	public boolean canUseBonemeal(World worldIn, Random rand, BlockPos pos, BlockState state) {
+	public boolean isBonemealSuccess(Level level, Random random, BlockPos pos, BlockState state) {
 		return Config.canBonemeal.get();
 	}
 
 	@Override
-	protected int getBonemealAgeIncrease(World world) {
-		return MathHelper.nextInt(world.rand, 1, 3);
+	protected int getBonemealAgeIncrease(Level level) {
+		return Mth.nextInt(level.random, 1, 3);
 	}
 }

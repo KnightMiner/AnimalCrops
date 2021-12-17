@@ -1,20 +1,21 @@
 buildscript {
   repositories {
-    maven { url = "https://files.minecraftforge.net/maven" }
+    maven { url = 'https://maven.minecraftforge.net' }
     jcenter()
     mavenCentral()
   }
   dependencies {
-    classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
+    classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
   }
 }
 apply plugin: 'net.minecraftforge.gradle'
 
 group = "knightminer"
 archivesBaseName = "AnimalCrops"
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 configurations {
-    deployerJars
+  deployerJars
 }
 
 version = "${minecraft_version}-${mod_version}"
@@ -28,7 +29,7 @@ sourceSets {
 }
 
 minecraft {
-	mappings channel: 'snapshot', version: mappings_version
+  mappings channel: 'official', version: minecraft_version
   accessTransformer project.file("src/main/resources/META-INF/accesstransformer.cfg")
 
   runs {
@@ -82,11 +83,6 @@ minecraft {
       }
     }
   }
-}
-
-sourceCompatibility = targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
-compileJava {
-    sourceCompatibility = targetCompatibility = '1.8'
 }
 
 repositories {

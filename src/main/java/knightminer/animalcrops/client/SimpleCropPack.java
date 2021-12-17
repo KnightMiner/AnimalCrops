@@ -2,12 +2,14 @@ package knightminer.animalcrops.client;
 
 import com.google.common.collect.ImmutableSet;
 import knightminer.animalcrops.AnimalCrops;
-import net.minecraft.resources.IPackNameDecorator;
-import net.minecraft.resources.ResourcePack;
-import net.minecraft.resources.ResourcePackFileNotFoundException;
-import net.minecraft.resources.ResourcePackInfo;
-import net.minecraft.resources.ResourcePackType;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.AbstractPackResources;
+import net.minecraft.server.packs.PackType;
+import net.minecraft.server.packs.ResourcePackFileNotFoundException;
+import net.minecraft.server.packs.repository.Pack;
+import net.minecraft.server.packs.repository.Pack.PackConstructor;
+import net.minecraft.server.packs.repository.PackSource;
+import net.minecraft.server.packs.repository.RepositorySource;
 
 import javax.annotation.Nonnull;
 import java.io.File;
@@ -19,19 +21,21 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-public class SimpleCropPack extends ResourcePack {
-
+/**
+ * Resource pack to override fancy models with simple ones
+ */
+public class SimpleCropPack extends AbstractPackResources implements RepositorySource {
   /** Base pack name, used for the folder containing pack resources */
   private static final String FOLDER = "simple_crops";
   /** Namespaced pack name, used as the internal name passed to the resource pack loader */
   public static final String PACK_NAME = AnimalCrops.modID + ":" + FOLDER;
   /** Resource prefix for valid pack resources. Essentially checks that they are client side Animal Crops resources */
-  private static final String RES_PREFIX = ResourcePackType.CLIENT_RESOURCES.getDirectoryName() + "/" + AnimalCrops.modID + "/";
+  private static final String RES_PREFIX = PackType.CLIENT_RESOURCES.getDirectory() + "/" + AnimalCrops.modID + "/";
   /** Replacement prefix for pack resources, to load from FOLDER */
   private static final String PATH_PREFIX = String.format("/%s%s/", RES_PREFIX, FOLDER);
 
   /** Pack instance as it behaves the same way every time and does not require additional resources */
-  private static final SimpleCropPack INSTANCE = new SimpleCropPack();
+  public static final SimpleCropPack INSTANCE = new SimpleCropPack();
 
   /**
    * Default constructor, private as this functions properly singleton
@@ -40,7 +44,6 @@ public class SimpleCropPack extends ResourcePack {
     // this file is not used, so giving the most useful path
     super(new File(PATH_PREFIX));
   }
-
   @Nonnull
   @Override
   public String getName() {
@@ -48,24 +51,27 @@ public class SimpleCropPack extends ResourcePack {
   }
 
   @Override
-  public Set<String> getResourceNamespaces(ResourcePackType type) {
+  public Set<String> getNamespaces(PackType type) {
     // only replace resources for animal crops
-    return type == ResourcePackType.CLIENT_RESOURCES ? ImmutableSet.of(AnimalCrops.modID) : ImmutableSet.of();
+    return type == PackType.CLIENT_RESOURCES ? ImmutableSet.of(AnimalCrops.modID) : ImmutableSet.of();
   }
 
   @Override
-  protected InputStream getInputStream(String name) throws IOException {
+  protected InputStream getResource(String name) throws IOException {
     // pack.mcmeta and pack.png are fetched without prefix, so pull from proper directory
     // everything else is prefixed, so prefix is trimmed
     if (name.equals("pack.mcmeta") || name.equals("pack.png") || name.startsWith(RES_PREFIX)) {
-      return AnimalCrops.class.getResourceAsStream(getPath(name));
+      InputStream stream = AnimalCrops.class.getResourceAsStream(getPath(name));
+      if (stream != null) {
+        return stream;
+      }
     }
 
     throw new ResourcePackFileNotFoundException(this.file, name);
   }
 
   @Override
-  protected boolean resourceExists(String name) {
+  protected boolean hasResource(String name) {
     if (!name.startsWith(RES_PREFIX)) {
       return false;
     }
@@ -73,7 +79,7 @@ public class SimpleCropPack extends ResourcePack {
   }
 
   @Override
-  public Collection<ResourceLocation> getAllResourceLocations(ResourcePackType type, String domain, String path, int maxDepth, Predicate<String> filter) {
+  public Collection<ResourceLocation> getResources(PackType type, String domain, String path, int maxDepth, Predicate<String> filter) {
     // this method appears to only be called for fonts and GUIs, so just return an empty list as neither is used here
     return Collections.emptyList();
   }
@@ -100,10 +106,8 @@ public class SimpleCropPack extends ResourcePack {
 
   /* Static functions */
 
-  /**
-   * Implementaton of IPackFinder for the registration event
-   */
-  public static void packFinder(Consumer<ResourcePackInfo> infoConsumer, ResourcePackInfo.IFactory factory) {
-    infoConsumer.accept(ResourcePackInfo.createResourcePack(PACK_NAME, false, ()->INSTANCE, factory, ResourcePackInfo.Priority.TOP, IPackNameDecorator.PLAIN));
+  @Override
+  public void loadPacks(Consumer<Pack> infoConsumer, PackConstructor factory) {
+    infoConsumer.accept(Pack.create(PACK_NAME, false, ()->this, factory, Pack.Position.TOP, PackSource.DEFAULT));
   }
 }

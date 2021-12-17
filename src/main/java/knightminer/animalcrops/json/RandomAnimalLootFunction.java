@@ -1,6 +1,5 @@
 package knightminer.animalcrops.json;
 
-import com.google.common.collect.ImmutableSet;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
@@ -10,34 +9,41 @@ import knightminer.animalcrops.core.Config;
 import knightminer.animalcrops.core.Config.AnimalCropType;
 import knightminer.animalcrops.core.Registration;
 import knightminer.animalcrops.core.Utils;
-import net.minecraft.item.ItemStack;
-import net.minecraft.loot.LootContext;
-import net.minecraft.loot.LootFunction;
-import net.minecraft.loot.LootFunctionType;
-import net.minecraft.loot.LootParameter;
-import net.minecraft.loot.conditions.ILootCondition;
-import net.minecraft.util.JSONUtils;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.functions.LootItemConditionalFunction;
+import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
+import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 
 import javax.annotation.Nonnull;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 
-public class RandomAnimalLootFunction extends LootFunction {
+/**
+ * Sets an item's entity to random
+ */
+public class RandomAnimalLootFunction extends LootItemConditionalFunction {
   private static final Map<String,AnimalCropType> TYPES = new HashMap<>();
+  public static final Serializer SERIALIZER = new Serializer();
 
   private final String type;
   private final AnimalCropType animalType;
-  protected RandomAnimalLootFunction(ILootCondition[] conditions, String type, AnimalCropType animalType) {
+  protected RandomAnimalLootFunction(LootItemCondition[] conditions, String type, AnimalCropType animalType) {
     super(conditions);
     this.type = type;
     this.animalType = animalType;
   }
 
   @Override
-  protected ItemStack doApply(ItemStack stack, LootContext context) {
+  public LootItemFunctionType getType() {
+    return Registration.Loot.randomAnimalFunction;
+  }
+
+  @Override
+  protected ItemStack run(ItemStack stack, LootContext context) {
     List<? extends String> list = animalType.getRandomDrops();
     // prevent crash if empty, the config condition should handle this though
     if (list.isEmpty()) {
@@ -49,18 +55,7 @@ public class RandomAnimalLootFunction extends LootFunction {
     return stack;
   }
 
-  @Nonnull
-  @Override
-  public Set<LootParameter<?>> getRequiredParameters() {
-    return ImmutableSet.of();
-  }
-
-  @Override
-  public LootFunctionType getFunctionType() {
-    return Registration.Loot.randomAnimalFunction;
-  }
-
-  public static class Serializer extends LootFunction.Serializer<RandomAnimalLootFunction> {
+  private static class Serializer extends LootItemConditionalFunction.Serializer<RandomAnimalLootFunction> {
     @Override
     public void serialize(JsonObject json, RandomAnimalLootFunction randAnimal, JsonSerializationContext context) {
       super.serialize(json, randAnimal, context);
@@ -69,8 +64,8 @@ public class RandomAnimalLootFunction extends LootFunction {
 
     @Nonnull
     @Override
-    public RandomAnimalLootFunction deserialize(@Nonnull JsonObject json, @Nonnull JsonDeserializationContext ctx, @Nonnull ILootCondition[] conditions) {
-      String type = JSONUtils.getString(json, "type").toLowerCase(Locale.ROOT);
+    public RandomAnimalLootFunction deserialize(JsonObject json, JsonDeserializationContext ctx, LootItemCondition[] conditions) {
+      String type = GsonHelper.getAsString(json, "type").toLowerCase(Locale.ROOT);
       AnimalCropType animalCropType = TYPES.get(type);
       if (animalCropType == null) {
         throw new JsonSyntaxException("Invalid animal type '" + type + "'");

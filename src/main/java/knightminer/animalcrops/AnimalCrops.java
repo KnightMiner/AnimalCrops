@@ -4,9 +4,8 @@ import knightminer.animalcrops.client.ClientEvents;
 import knightminer.animalcrops.core.Config;
 import knightminer.animalcrops.core.Registration;
 import knightminer.animalcrops.core.Utils;
-import net.minecraft.block.Block;
-import net.minecraft.item.Item;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.world.level.block.Block;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.Tags.IOptionalNamedTag;
@@ -30,8 +29,6 @@ public class AnimalCrops {
 		Utils.initReflection();
 
 		ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, Config.SPEC);
-		MinecraftForge.EVENT_BUS.addGenericListener(Block.class, Registration::missingBlockMappings);
-		MinecraftForge.EVENT_BUS.addGenericListener(Item.class, Registration::missingItemMappings);
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(Config::configChanged);
 	}
 }

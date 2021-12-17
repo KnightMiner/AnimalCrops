@@ -2,6 +2,6 @@
 @MethodsReturnNonnullByDefault
 package knightminer.animalcrops.items;
 
-import mcp.MethodsReturnNonnullByDefault;
+import net.minecraft.MethodsReturnNonnullByDefault;
 
 import javax.annotation.ParametersAreNonnullByDefault;

@@ -4,32 +4,30 @@ import knightminer.animalcrops.AnimalCrops;
 import knightminer.animalcrops.blocks.AnemonemalBlock;
 import knightminer.animalcrops.blocks.AnimalCropsBlock;
 import knightminer.animalcrops.blocks.AnimalShroomBlock;
+import knightminer.animalcrops.blocks.entity.AnimalCropsBlockEntity;
 import knightminer.animalcrops.items.AnimalPollenItem;
 import knightminer.animalcrops.items.AnimalSeedsItem;
 import knightminer.animalcrops.json.AddEntryLootModifier;
 import knightminer.animalcrops.json.ConfigCondition;
 import knightminer.animalcrops.json.RandomAnimalLootFunction;
 import knightminer.animalcrops.json.SetAnimalLootFunction;
-import knightminer.animalcrops.tileentity.AnimalCropsTileEntity;
-import net.minecraft.block.AbstractBlock;
-import net.minecraft.block.Block;
-import net.minecraft.block.ComposterBlock;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.material.MaterialColor;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.loot.LootConditionType;
-import net.minecraft.loot.LootFunctionType;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.FluidTags;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.ComposterBlock;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MaterialColor;
+import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
+import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
 import net.minecraftforge.common.loot.GlobalLootModifierSerializer;
 import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.event.RegistryEvent.MissingMappings;
-import net.minecraftforge.event.RegistryEvent.MissingMappings.Mapping;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
@@ -54,39 +52,39 @@ public class Registration {
 
   public static final Item pollen = injected();
   @ObjectHolder("crops")
-  public static final TileEntityType<AnimalCropsTileEntity> cropsTE = injected();
+  public static final BlockEntityType<AnimalCropsBlockEntity> cropsTE = injected();
 
   // subclass to prevent conflict with non-Forge registries and object holder
   public static class Loot {
-    public static LootFunctionType setAnimalFunction;
-    public static LootFunctionType randomAnimalFunction;
-    public static LootConditionType configCondition;
+    public static LootItemFunctionType setAnimalFunction;
+    public static LootItemFunctionType randomAnimalFunction;
+    public static LootItemConditionType configCondition;
   }
 
   @SubscribeEvent
   static void registerBlocks(RegistryEvent.Register<Block> event) {
     IForgeRegistry<Block> r = event.getRegistry();
 
-    AbstractBlock.Properties props = AbstractBlock.Properties.create(Material.PLANTS).tickRandomly().hardnessAndResistance(0).sound(SoundType.CROP).doesNotBlockMovement();
+    BlockBehaviour.Properties props = BlockBehaviour.Properties.of(Material.PLANT).randomTicks().strength(0).sound(SoundType.CROP).noCollission();
     register(r, new AnimalCropsBlock(props, Config.animalCrops), "crops");
     register(r, new AnemonemalBlock(props, Config.anemonemals, () -> Fluids.WATER, FluidTags.WATER), "anemonemal");
-    props = AbstractBlock.Properties.create(Material.PLANTS, MaterialColor.RED).tickRandomly().hardnessAndResistance(0).sound(SoundType.NETHER_WART).doesNotBlockMovement();
+    props = BlockBehaviour.Properties.of(Material.PLANT, MaterialColor.COLOR_RED).randomTicks().strength(0).sound(SoundType.NETHER_WART).noCollission();
     register(r, new AnimalShroomBlock(props, Config.animalShrooms), "shrooms");
     register(r, new AnemonemalBlock(props, Config.magnemones, () -> Fluids.LAVA, FluidTags.LAVA), "magnemone");
   }
 
   @SubscribeEvent
-  static void registerTE(RegistryEvent.Register<TileEntityType<?>> event) {
-    IForgeRegistry<TileEntityType<?>> r = event.getRegistry();
+  static void registerTE(RegistryEvent.Register<BlockEntityType<?>> event) {
+    IForgeRegistry<BlockEntityType<?>> r = event.getRegistry();
 
     //noinspection ConstantConditions
-    register(r, TileEntityType.Builder.create(AnimalCropsTileEntity::new, crops, anemonemal, shrooms, magnemone).build(null), "crops");
+    register(r, BlockEntityType.Builder.of(AnimalCropsBlockEntity::new, crops, anemonemal, shrooms, magnemone).build(null), "crops");
   }
 
   @SubscribeEvent
   static void registerItems(RegistryEvent.Register<Item> event) {
     IForgeRegistry<Item> r = event.getRegistry();
-    Item.Properties props = (new Item.Properties()).group(ItemGroup.MATERIALS);
+    Item.Properties props = (new Item.Properties()).tab(CreativeModeTab.TAB_MATERIALS);
 
     register(r, new AnimalSeedsItem(crops, props), "seeds");
     register(r, new AnimalSeedsItem(anemonemal, props), "anemonemal");
@@ -104,33 +102,17 @@ public class Registration {
   // anything with no register event
   @SubscribeEvent
   static void registerMisc(FMLCommonSetupEvent event) {
-    ComposterBlock.registerCompostable(0.5f, seeds);
-    ComposterBlock.registerCompostable(0.5f, anemonemalSeeds);
-    ComposterBlock.registerCompostable(0.5f, spores);
-    ComposterBlock.registerCompostable(0.5f, magnemoneSpores);
-    ComposterBlock.registerCompostable(0.5f, pollen);
+    event.enqueueWork(() -> {
+      ComposterBlock.COMPOSTABLES.put(seeds, 0.5f);
+      ComposterBlock.COMPOSTABLES.put(anemonemalSeeds, 0.5f);
+      ComposterBlock.COMPOSTABLES.put(spores, 0.5f);
+      ComposterBlock.COMPOSTABLES.put(magnemoneSpores, 0.5f);
+      ComposterBlock.COMPOSTABLES.put(pollen, 0.5f);
+    });
 
-    Loot.setAnimalFunction = register(Registry.LOOT_FUNCTION_TYPE, "set_animal", new LootFunctionType(new SetAnimalLootFunction.Serializer()));
-    Loot.randomAnimalFunction = register(Registry.LOOT_FUNCTION_TYPE, "random_animal", new LootFunctionType(new RandomAnimalLootFunction.Serializer()));
-    Loot.configCondition = register(Registry.LOOT_CONDITION_TYPE, "config", new LootConditionType(new ConfigCondition.Serializer()));
-  }
-
-  // registered to FORGE event bus in AnimalCrops
-  public static void missingBlockMappings(MissingMappings<Block> event) {
-    for (Mapping<Block> mapping : event.getAllMappings()) {
-      if (AnimalCrops.modID.equals(mapping.key.getNamespace()) && "lily".equals(mapping.key.getPath())) {
-        mapping.ignore();
-      }
-    }
-  }
-
-  // registered to FORGE event bus in AnimalCrops
-  public static void missingItemMappings(MissingMappings<Item> event) {
-    for (Mapping<Item> mapping : event.getAllMappings()) {
-      if (AnimalCrops.modID.equals(mapping.key.getNamespace()) && "lily".equals(mapping.key.getPath())) {
-        mapping.remap(anemonemalSeeds);
-      }
-    }
+    Loot.setAnimalFunction = register(Registry.LOOT_FUNCTION_TYPE, "set_animal", new LootItemFunctionType(SetAnimalLootFunction.SERIALIZER));
+    Loot.randomAnimalFunction = register(Registry.LOOT_FUNCTION_TYPE, "random_animal", new LootItemFunctionType(RandomAnimalLootFunction.SERIALIZER));
+    Loot.configCondition = register(Registry.LOOT_CONDITION_TYPE, "config", new LootItemConditionType(ConfigCondition.SERIALIZER));
   }
 
 
