@@ -69,16 +69,17 @@ minecraft {
       workingDirectory project.file('run')
 
       // Recommended logging data for a userdev environment
-      property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+      property 'forge.logging.markers', 'REGISTRIES'
 
       // Recommended logging level for the console
       property 'forge.logging.console.level', 'debug'
 
-      args '--mod', 'inspirations', '--all', '--output', file('src/generated/resources/')
+      // Specify the modid for data generation, where to output the resulting resource, and where to look for existing resources.
+      args '--mod', 'animalcrops', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
 
       mods {
         animalcrops {
-           source sourceSets.main
+          source sourceSets.main
         }
       }
     }

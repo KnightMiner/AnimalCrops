@@ -5,6 +5,7 @@ import knightminer.animalcrops.items.AnimalSeedsItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.tags.Tag;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.LevelAccessor;
@@ -13,9 +14,9 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
+import net.minecraftforge.common.Tags.IOptionalNamedTag;
 
 import javax.annotation.Nullable;
-import java.util.List;
 import java.util.function.Supplier;
 
 /**
@@ -24,8 +25,8 @@ import java.util.function.Supplier;
 public class AnemonemalBlock extends AnimalCropsBlock {
   private final Supplier<? extends FlowingFluid> fluid;
   private final Tag<Fluid> tag;
-  public AnemonemalBlock(Properties props, Supplier<List<? extends String>> animals, Supplier<FlowingFluid> fluid, Tag<Fluid> tag) {
-    super(props, animals);
+  public AnemonemalBlock(Properties props, IOptionalNamedTag<EntityType<?>> entityTag, Supplier<FlowingFluid> fluid, Tag<Fluid> tag) {
+    super(props, entityTag);
     this.fluid = fluid;
     this.tag = tag;
   }

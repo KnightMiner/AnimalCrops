@@ -1,14 +1,16 @@
 package knightminer.animalcrops.blocks;
 
-import knightminer.animalcrops.AnimalCrops;
 import knightminer.animalcrops.blocks.entity.AnimalCropsBlockEntity;
+import knightminer.animalcrops.core.AnimalTags;
 import knightminer.animalcrops.core.Config;
 import knightminer.animalcrops.core.Registration;
 import knightminer.animalcrops.core.Utils;
 import knightminer.animalcrops.items.AnimalSeedsItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
+import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTab;
@@ -21,20 +23,20 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.common.PlantType;
+import net.minecraftforge.common.Tags.IOptionalNamedTag;
 
 import javax.annotation.Nullable;
-import java.util.List;
+import java.util.Objects;
 import java.util.Random;
-import java.util.function.Supplier;
 
 /**
  * Base crop logic, used for plains crops directly
  */
 public class AnimalCropsBlock extends CropBlock implements EntityBlock {
-	protected final Supplier<List<? extends String>> animals;
-	public AnimalCropsBlock(Properties props, Supplier<List<? extends String>> animals) {
+	private final IOptionalNamedTag<EntityType<?>> tag;
+	public AnimalCropsBlock(Properties props, IOptionalNamedTag<EntityType<?>> tag) {
 		super(props);
-		this.animals = animals;
+		this.tag = tag;
 	}
 
 	/* Crop properties */
@@ -46,7 +48,7 @@ public class AnimalCropsBlock extends CropBlock implements EntityBlock {
 
 	@Override
 	protected boolean mayPlaceOn(BlockState state, BlockGetter worldIn, BlockPos pos) {
-		return state.is(AnimalCrops.CROP_SOIL);
+		return state.is(AnimalTags.CROP_SOIL);
 	}
 
 
@@ -110,9 +112,11 @@ public class AnimalCropsBlock extends CropBlock implements EntityBlock {
 	}
 
 	@Override
-	public void fillItemCategory(CreativeModeTab tag, NonNullList<ItemStack> items) {
-		for (String id : animals.get()) {
-			items.add(Utils.setEntityId(new ItemStack(this), id));
+	public void fillItemCategory(CreativeModeTab tab, NonNullList<ItemStack> items) {
+		if (!EntityTypeTags.getAllTags().getAllTags().isEmpty()) {
+			for (EntityType<?> type : tag.getValues()) {
+				items.add(Utils.setEntityId(new ItemStack(this), Objects.requireNonNull(type.getRegistryName()).toString()));
+			}
 		}
 	}
 

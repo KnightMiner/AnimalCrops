@@ -66,11 +66,11 @@ public class Registration {
     IForgeRegistry<Block> r = event.getRegistry();
 
     BlockBehaviour.Properties props = BlockBehaviour.Properties.of(Material.PLANT).randomTicks().strength(0).sound(SoundType.CROP).noCollission();
-    register(r, new AnimalCropsBlock(props, Config.animalCrops), "crops");
-    register(r, new AnemonemalBlock(props, Config.anemonemals, () -> Fluids.WATER, FluidTags.WATER), "anemonemal");
+    register(r, new AnimalCropsBlock(props, AnimalTags.ANIMAL_CROPS), "crops");
+    register(r, new AnemonemalBlock(props, AnimalTags.ANEMONEMAL, () -> Fluids.WATER, FluidTags.WATER), "anemonemal");
     props = BlockBehaviour.Properties.of(Material.PLANT, MaterialColor.COLOR_RED).randomTicks().strength(0).sound(SoundType.NETHER_WART).noCollission();
-    register(r, new AnimalShroomBlock(props, Config.animalShrooms), "shrooms");
-    register(r, new AnemonemalBlock(props, Config.magnemones, () -> Fluids.LAVA, FluidTags.LAVA), "magnemone");
+    register(r, new AnimalShroomBlock(props, AnimalTags.ANIMAL_SHROOMS), "shrooms");
+    register(r, new AnemonemalBlock(props, AnimalTags.MAGNEMONES, () -> Fluids.LAVA, FluidTags.LAVA), "magnemone");
   }
 
   @SubscribeEvent

@@ -1,5 +1,6 @@
 package knightminer.animalcrops.items;
 
+import knightminer.animalcrops.core.AnimalTags;
 import knightminer.animalcrops.core.Config;
 import knightminer.animalcrops.core.Registration;
 import knightminer.animalcrops.core.Utils;
@@ -36,15 +37,26 @@ public class AnimalPollenItem extends Item {
   @Override
   public InteractionResult interactLivingEntity(ItemStack stack, Player player, LivingEntity entity, InteractionHand hand) {
     EntityType<?> type = entity.getType();
-    String id = Objects.requireNonNull(type.getRegistryName()).toString();
-    // check blacklist first, easiest
-    if (!Config.pollenBlacklist.get().contains(id)) {
-      // next, check which type of entity we are grabbing
-      boolean isCrops = Config.animalCrops.get().contains(id);
-      if (isCrops || Config.anemonemals.get().contains(id)) {
+    if (AnimalTags.POLLEN_REACTIVE.contains(type)) {
+      // next, check which type of seed we are grabbing
+      Item item = null;
+      if (AnimalTags.ANIMAL_CROPS.contains(type)) {
+        item = Registration.seeds;
+      }
+      else if (AnimalTags.ANEMONEMAL.contains(type)) {
+        item = Registration.anemonemalSeeds;
+      }
+      else if (AnimalTags.ANIMAL_SHROOMS.contains(type)) {
+        item = Registration.spores;
+      }
+      else if (AnimalTags.MAGNEMONES.contains(type)) {
+        item = Registration.magnemoneSpores;
+      }
+      // its possible the type matches none because someone used tags wrongly
+      if (item != null) {
         // create the seed item
-        ItemStack seeds = new ItemStack(isCrops ? Registration.seeds : Registration.anemonemalSeeds);
-        Utils.setEntityId(seeds, id);
+        ItemStack seeds = new ItemStack(item);
+        Utils.setEntityId(seeds, Objects.requireNonNull(type.getRegistryName()).toString());
         player.setItemInHand(hand, Utils.fillContainer(player, stack, seeds));
 
         // effects

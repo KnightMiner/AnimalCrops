@@ -1,33 +1,33 @@
 package knightminer.animalcrops.blocks;
 
-import knightminer.animalcrops.AnimalCrops;
+import knightminer.animalcrops.core.AnimalTags;
 import knightminer.animalcrops.core.Registration;
 import knightminer.animalcrops.items.AnimalSeedsItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.PlantType;
+import net.minecraftforge.common.Tags.IOptionalNamedTag;
 
-import java.util.List;
 import java.util.Random;
-import java.util.function.Supplier;
 
 /**
  * Logic for nether crops
  */
 public class AnimalShroomBlock extends AnimalCropsBlock {
-	public AnimalShroomBlock(Properties props, Supplier<List<? extends String>> animals) {
-		super(props, animals);
+	public AnimalShroomBlock(Properties props, IOptionalNamedTag<EntityType<?>> tag) {
+		super(props, tag);
 	}
 
 
 	@Override
 	protected boolean mayPlaceOn(BlockState state, BlockGetter worldIn, BlockPos pos) {
-		return state.is(AnimalCrops.SHROOM_SOIL);
+		return state.is(AnimalTags.SHROOM_SOIL);
 	}
 
 	@Override

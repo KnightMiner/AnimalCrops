@@ -10,6 +10,7 @@ import knightminer.animalcrops.core.Config.AnimalCropType;
 import knightminer.animalcrops.core.Registration;
 import knightminer.animalcrops.core.Utils;
 import net.minecraft.util.GsonHelper;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.functions.LootItemConditionalFunction;
@@ -18,9 +19,9 @@ import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 
 import javax.annotation.Nonnull;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Sets an item's entity to random
@@ -44,13 +45,12 @@ public class RandomAnimalLootFunction extends LootItemConditionalFunction {
 
   @Override
   protected ItemStack run(ItemStack stack, LootContext context) {
-    List<? extends String> list = animalType.getRandomDrops();
+    EntityType<?> type = animalType.getRandomValue(context.getRandom());
     // prevent crash if empty, the config condition should handle this though
-    if (list.isEmpty()) {
+    if (type == null) {
       AnimalCrops.log.error("Received empty animal list for {}, a condition is missing in the loot table", type);
     } else {
-      String id = list.get(context.getRandom().nextInt(list.size()));
-      Utils.setEntityId(stack, id);
+      Utils.setEntityId(stack, Objects.requireNonNull(type.getRegistryName()).toString());
     }
     return stack;
   }

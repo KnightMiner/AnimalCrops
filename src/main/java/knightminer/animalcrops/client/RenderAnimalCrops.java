@@ -6,7 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.block.CropBlock;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -27,7 +27,7 @@ public class RenderAnimalCrops implements BlockEntityRenderer<AnimalCropsBlockEn
       return;
     }
 
-    Mob entity = be.getEntity(true);
+    LivingEntity entity = be.getEntity(true);
     if (entity == null) {
       return;
     }

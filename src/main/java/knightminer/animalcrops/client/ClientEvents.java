@@ -24,10 +24,14 @@ public class ClientEvents {
 
 	public ClientEvents() {
 		FMLJavaModLoadingContext.get().getModEventBus().register(this);
-		Minecraft.getInstance().getResourcePackRepository().addPackFinder(SimpleCropPack.INSTANCE);
-		ResourceManager manager = Minecraft.getInstance().getResourceManager();
-		if (manager instanceof ReloadableResourceManager reloadable) {
-			reloadable.registerReloadListener(Settings.INSTANCE);
+		Minecraft minecraft = Minecraft.getInstance();
+		//noinspection ConstantConditions  datagen its null
+		if (minecraft != null) {
+			minecraft.getResourcePackRepository().addPackFinder(SimpleCropPack.INSTANCE);
+			ResourceManager manager = Minecraft.getInstance().getResourceManager();
+			if (manager instanceof ReloadableResourceManager reloadable) {
+				reloadable.registerReloadListener(Settings.INSTANCE);
+			}
 		}
 	}
 

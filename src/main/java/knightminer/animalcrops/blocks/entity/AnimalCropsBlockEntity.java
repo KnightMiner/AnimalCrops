@@ -1,6 +1,7 @@
 package knightminer.animalcrops.blocks.entity;
 
-import knightminer.animalcrops.core.Config;
+import knightminer.animalcrops.AnimalCrops;
+import knightminer.animalcrops.core.AnimalTags;
 import knightminer.animalcrops.core.Registration;
 import knightminer.animalcrops.core.Utils;
 import net.minecraft.core.BlockPos;
@@ -8,10 +9,12 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.AgeableMob;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Entity.RemovalReason;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.monster.Slime;
@@ -19,6 +22,7 @@ import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluids;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -31,7 +35,7 @@ public class AnimalCropsBlockEntity extends BlockEntity {
 	 * Cached entity from {@link #getEntity(boolean)}.
 	 * Typically null except on the client side (only cached during fancy crop rendering)
 	 * */
-	private Mob entity;
+	private LivingEntity entity;
 
 	public AnimalCropsBlockEntity(BlockPos pos, BlockState state) {
 		super(Registration.cropsTE, pos, state);
@@ -66,7 +70,7 @@ public class AnimalCropsBlockEntity extends BlockEntity {
 	 */
 	@SuppressWarnings("Convert2MethodRef")
 	@Nullable
-	public Mob getEntity(boolean cacheEntity) {
+	public LivingEntity getEntity(boolean cacheEntity) {
 		if (cacheEntity && entity != null) {
 			return entity;
 		}
@@ -84,8 +88,9 @@ public class AnimalCropsBlockEntity extends BlockEntity {
 
 		// if the entity is not MobEntity, discard it
 		// should not happen as all spawn eggs are MobEntity
-		if (!(created instanceof Mob entity)) {
+		if (!(created instanceof LivingEntity entity)) {
 			created.remove(RemovalReason.DISCARDED);
+			AnimalCrops.log.error("Attempted to create invalid non-living entity " + created.getType());
 			return null;
 		}
 
@@ -127,7 +132,7 @@ public class AnimalCropsBlockEntity extends BlockEntity {
 	 */
 	public void spawnAnimal() {
 		// if we have no entity, give up
-		Mob entity = getEntity(false);
+		LivingEntity entity = getEntity(false);
 		if(entity == null) {
 			return;
 		}
@@ -137,8 +142,10 @@ public class AnimalCropsBlockEntity extends BlockEntity {
 
 		// set entity data where relevant
 		assert level != null;
-		if (level instanceof ServerLevelAccessor) {
-			entity.finalizeSpawn((ServerLevelAccessor)level, level.getCurrentDifficultyAt(entity.blockPosition()), MobSpawnType.SPAWN_EGG, null, null);
+		Mob mob = null;
+		if (level instanceof ServerLevelAccessor accessor && entity instanceof Mob) {
+			mob = (Mob) entity;
+			mob.finalizeSpawn(accessor, level.getCurrentDifficultyAt(entity.blockPosition()), MobSpawnType.SPAWN_EGG, null, null);
 		}
 
 		// slime sizes should not be bigger than 2
@@ -149,7 +156,9 @@ public class AnimalCropsBlockEntity extends BlockEntity {
 		// spawn
 		entity.level = level;
 		level.addFreshEntity(entity);
-		entity.playAmbientSound();
+		if (mob != null) {
+			mob.playAmbientSound();
+		}
 	}
 
 
@@ -183,6 +192,11 @@ public class AnimalCropsBlockEntity extends BlockEntity {
 	 * @return  True if the ID is valid, false otherwise
 	 */
 	private static boolean entityValid(String entityID) {
-		return Config.allCropTypes.stream().anyMatch(type -> type.get().contains(entityID));
+		ResourceLocation loc = ResourceLocation.tryParse(entityID);
+		if (loc != null && ForgeRegistries.ENTITIES.containsKey(loc)) {
+			EntityType<?> type = ForgeRegistries.ENTITIES.getValue(loc);
+			return type != null && AnimalTags.PLANTABLE.contains(type);
+		}
+		return false;
 	}
 }
