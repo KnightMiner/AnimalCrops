@@ -10,7 +10,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.AgeableMob;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Entity.RemovalReason;
 import net.minecraft.world.entity.EntityType;
@@ -104,8 +103,8 @@ public class AnimalCropsBlockEntity extends BlockEntity {
 		entity.yHeadRotO = entity.yHeadRot = angle;
 		entity.yBodyRotO = entity.yBodyRot = angle;
 
-		if(entity instanceof AgeableMob) {
-			((AgeableMob)entity).setAge(-24000);
+		if (entity instanceof Mob mob) {
+			mob.setBaby(true);
 		}
 
 		// cache the entity if requested
