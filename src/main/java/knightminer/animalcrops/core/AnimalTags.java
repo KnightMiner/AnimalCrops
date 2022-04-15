@@ -1,11 +1,10 @@
 package knightminer.animalcrops.core;
 
+import net.minecraft.core.Registry;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.block.Block;
-import net.minecraftforge.registries.ForgeRegistries;
-
-import java.util.Set;
 
 /** Class holding all tags used by the mod */
 public class AnimalTags {
@@ -44,11 +43,11 @@ public class AnimalTags {
 
 	/** Creates a tag for a block */
 	private static TagKey<Block> blockTag(String name) {
-		return ForgeRegistries.BLOCKS.tags().createOptionalTagKey(Registration.getResource(name), Set.of());
+		return BlockTags.create(Registration.getResource(name));
 	}
 
 	/** Creates a tag for a entity type */
 	private static TagKey<EntityType<?>> entityTag(String name) {
-		return ForgeRegistries.ENTITIES.tags().createOptionalTagKey(Registration.getResource(name), Set.of());
+		return TagKey.create(Registry.ENTITY_TYPE_REGISTRY, Registration.getResource(name));
 	}
 }
