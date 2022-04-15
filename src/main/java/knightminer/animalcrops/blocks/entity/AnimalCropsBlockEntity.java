@@ -194,7 +194,7 @@ public class AnimalCropsBlockEntity extends BlockEntity {
 		ResourceLocation loc = ResourceLocation.tryParse(entityID);
 		if (loc != null && ForgeRegistries.ENTITIES.containsKey(loc)) {
 			EntityType<?> type = ForgeRegistries.ENTITIES.getValue(loc);
-			return type != null && AnimalTags.PLANTABLE.contains(type);
+			return type != null && type.is(AnimalTags.PLANTABLE);
 		}
 		return false;
 	}

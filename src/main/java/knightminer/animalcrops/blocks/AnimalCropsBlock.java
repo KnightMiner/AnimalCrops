@@ -8,7 +8,7 @@ import knightminer.animalcrops.core.Utils;
 import knightminer.animalcrops.items.AnimalSeedsItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
-import net.minecraft.tags.EntityTypeTags;
+import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -23,7 +23,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.common.PlantType;
-import net.minecraftforge.common.Tags.IOptionalNamedTag;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.tags.ITag;
 
 import javax.annotation.Nullable;
 import java.util.Objects;
@@ -33,8 +34,8 @@ import java.util.Random;
  * Base crop logic, used for plains crops directly
  */
 public class AnimalCropsBlock extends CropBlock implements EntityBlock {
-	private final IOptionalNamedTag<EntityType<?>> tag;
-	public AnimalCropsBlock(Properties props, IOptionalNamedTag<EntityType<?>> tag) {
+	private final TagKey<EntityType<?>> tag;
+	public AnimalCropsBlock(Properties props, TagKey<EntityType<?>> tag) {
 		super(props);
 		this.tag = tag;
 	}
@@ -113,8 +114,9 @@ public class AnimalCropsBlock extends CropBlock implements EntityBlock {
 
 	@Override
 	public void fillItemCategory(CreativeModeTab tab, NonNullList<ItemStack> items) {
-		if (!EntityTypeTags.getAllTags().getAllTags().isEmpty()) {
-			for (EntityType<?> type : tag.getValues()) {
+		ITag<EntityType<?>> entityTag = ForgeRegistries.ENTITIES.tags().getTag(tag);
+		if (entityTag.isBound() && !entityTag.isEmpty()) {
+			for (EntityType<?> type : entityTag.stream().toList()) {
 				items.add(Utils.setEntityId(new ItemStack(this), Objects.requireNonNull(type.getRegistryName()).toString()));
 			}
 		}

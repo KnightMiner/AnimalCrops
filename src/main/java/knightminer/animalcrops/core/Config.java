@@ -1,13 +1,15 @@
 package knightminer.animalcrops.core;
 
 import knightminer.animalcrops.items.AnimalPollenItem;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.ForgeConfigSpec.BooleanValue;
 import net.minecraftforge.common.ForgeConfigSpec.Builder;
 import net.minecraftforge.common.ForgeConfigSpec.EnumValue;
-import net.minecraftforge.common.Tags.IOptionalNamedTag;
 import net.minecraftforge.fml.event.config.ModConfigEvent;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.tags.ITag;
 
 import javax.annotation.Nullable;
 import java.util.Random;
@@ -76,10 +78,10 @@ public class Config {
 
 	/** Config setup for each type of animal crops */
 	public static class AnimalCropType {
-		private final IOptionalNamedTag<EntityType<?>> tag;
+		private final TagKey<EntityType<?>> tag;
 		private final BooleanValue drop;
 
-		protected AnimalCropType(IOptionalNamedTag<EntityType<?>> tag, BooleanValue drop) {
+		protected AnimalCropType(TagKey<EntityType<?>> tag, BooleanValue drop) {
 			this.tag = tag;
 			this.drop = drop;
 		}
@@ -88,14 +90,15 @@ public class Config {
 		 * Returns true if this type of animal crops drops
 		 */
 		public boolean doesDrop() {
-			return drop.get() && !tag.isDefaulted() && !tag.getValues().isEmpty();
+			ITag<EntityType<?>> typeTag = ForgeRegistries.ENTITIES.tags().getTag(tag);
+			return drop.get() && !typeTag.isBound() && !typeTag.isEmpty();
 		}
 
 		/** Gets a random value of this crop drop type */
 		@Nullable
 		public EntityType<?> getRandomValue(Random random) {
 			if (doesDrop()) {
-				return tag.getRandomElement(random);
+				return ForgeRegistries.ENTITIES.tags().getTag(tag).getRandomElement(random).get();
 			}
 			return null;
 		}
