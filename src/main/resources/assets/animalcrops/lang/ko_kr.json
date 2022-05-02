@@ -1,0 +1,25 @@
+{
+    "block.animalcrops.crops": "동물 작물",
+    "item.animalcrops.seeds": "%s 씨앗",
+    "item.animalcrops.seeds.default": "동물 씨앗",
+    "item.animalcrops.seeds.tooltip": "잔디나 회백토에 심어 동물을 키우세요",
+  
+    "block.animalcrops.anemonemal": "동물 말미잘",
+    "item.animalcrops.anemonemal": "%s 씨앗",
+    "item.animalcrops.anemonemal.default": "동물 말미잘 씨앗",
+    "item.animalcrops.anemonemal.tooltip": "물 속에 심어 동물을 키우세요",
+  
+    "block.animalcrops.shrooms": "동물 버섯",
+    "item.animalcrops.spores": "%s 포자",
+    "item.animalcrops.spores.default": "동물 포자",
+    "item.animalcrops.spores.tooltip": "네더의 토양에 심어 동물을 키우세요",
+  
+    "block.animalcrops.magnemone": "동물 마그말미잘",
+    "item.animalcrops.magnemone": "%s 포자",
+    "item.animalcrops.magnemone.default": "동물 마그말미잘 포자",
+    "item.animalcrops.magnemone.tooltip": "용암 속에 심어 동물을 키우세요",
+  
+    "item.animalcrops.pollen": "동물 꽃가루",
+    "item.animalcrops.pollen.tooltip": "동물에 사용하여 동물 씨앗을 얻으세요",
+    "item.animalcrops.pollen.invalid": "%s에 대한 씨앗이 없습니다."
+  }
