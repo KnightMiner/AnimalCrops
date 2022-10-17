@@ -37,19 +37,19 @@ public class AnimalPollenItem extends Item {
   @Override
   public InteractionResult interactLivingEntity(ItemStack stack, Player player, LivingEntity entity, InteractionHand hand) {
     EntityType<?> type = entity.getType();
-    if (AnimalTags.POLLEN_REACTIVE.contains(type)) {
+    if (type.is(AnimalTags.POLLEN_REACTIVE)) {
       // next, check which type of seed we are grabbing
       Item item = null;
-      if (AnimalTags.ANIMAL_CROPS.contains(type)) {
+      if (type.is(AnimalTags.ANIMAL_CROPS)) {
         item = Registration.seeds;
       }
-      else if (AnimalTags.ANEMONEMAL.contains(type)) {
+      else if (type.is(AnimalTags.ANEMONEMAL)) {
         item = Registration.anemonemalSeeds;
       }
-      else if (AnimalTags.ANIMAL_SHROOMS.contains(type)) {
+      else if (type.is(AnimalTags.ANIMAL_SHROOMS)) {
         item = Registration.spores;
       }
-      else if (AnimalTags.MAGNEMONES.contains(type)) {
+      else if (type.is(AnimalTags.MAGNEMONES)) {
         item = Registration.magnemoneSpores;
       }
       // its possible the type matches none because someone used tags wrongly

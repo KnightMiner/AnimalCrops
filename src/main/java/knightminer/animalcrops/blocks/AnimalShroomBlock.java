@@ -6,13 +6,13 @@ import knightminer.animalcrops.items.AnimalSeedsItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.PlantType;
-import net.minecraftforge.common.Tags.IOptionalNamedTag;
 
 import java.util.Random;
 
@@ -20,7 +20,7 @@ import java.util.Random;
  * Logic for nether crops
  */
 public class AnimalShroomBlock extends AnimalCropsBlock {
-	public AnimalShroomBlock(Properties props, IOptionalNamedTag<EntityType<?>> tag) {
+	public AnimalShroomBlock(Properties props, TagKey<EntityType<?>> tag) {
 		super(props, tag);
 	}
 
